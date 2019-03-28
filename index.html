@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>The Night Sky</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #333;
+        color: #ddd;
+        font-family: monospace;
+        font-size: 16px;
+        /* display: none; */
+      }
+      input {
+        font: 1em monospace;
+        background: transparent;
+        color: #ddd;
+        border: none;
+        outline: none;
+      }
+
+      input:focus {
+        color: red;
+      }
+      .bar {
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: stretch;
+      }
+      .bar > div {
+        padding: 0.5rem 3rem;
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        border-width: 0 0 0 1px;
+        flex: 1;
+      }
+      .bar > div:first-child {
+        flex: none;
+        border: none;
+        padding: 0;
+      }
+
+      #start-stop {
+        width: 80px;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: default;
+        user-select: none;
+        font-size: 30px;
+        transition: background-color 0.2s;
+      }
+
+      #start-stop:hover {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .label {
+        font-weight: bold;
+      }
+
+      .display {
+        float: right;
+        text-align: right;
+      }
+      input[type='range'] {
+        -webkit-appearance: none;
+        width: 100%;
+        margin: 10px 0;
+      }
+      input[type='range']:focus {
+        outline: none;
+      }
+      input[type='range']::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 16px;
+        cursor: pointer;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 0px;
+        border: 0px solid #010101;
+      }
+      input[type='range']:focus::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 16px;
+        cursor: pointer;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 0px;
+        border: 0px solid #010101;
+      }
+      input[type='range']::-webkit-slider-thumb {
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        height: 36px;
+        width: 8px;
+        border-radius: 0px;
+        background: #ffffff;
+        cursor: pointer;
+        -webkit-appearance: none;
+        margin-top: -10px;
+      }
+      input[type='range']:focus::-webkit-slider-runnable-track {
+        background: rgba(13, 13, 13, 0);
+      }
+      input[type='range']::-moz-range-track {
+        width: 100%;
+        height: 16px;
+        cursor: pointer;
+        background: rgba(0, 0, 0, 0);
+        border-radius: 0px;
+        border: 0px solid #010101;
+      }
+      input[type='range']::-moz-range-thumb {
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        height: 36px;
+        width: 8px;
+        border-radius: 0px;
+        background: #ffffff;
+        cursor: pointer;
+      }
+      input[type='range']::-ms-track {
+        width: 100%;
+        height: 16px;
+        cursor: pointer;
+        background: transparent;
+        border-color: transparent;
+        color: transparent;
+      }
+      input[type='range']::-ms-fill-lower {
+        background: rgba(0, 0, 0, 0);
+        border: 0px solid #010101;
+        border-radius: 0px;
+      }
+      input[type='range']::-ms-fill-upper {
+        background: rgba(0, 0, 0, 0);
+        border: 0px solid #010101;
+        border-radius: 0px;
+      }
+      input[type='range']::-ms-thumb {
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        height: 36px;
+        width: 8px;
+        border-radius: 0px;
+        background: #ffffff;
+        cursor: pointer;
+        height: 16px;
+      }
+      input[type='range']:focus::-ms-fill-lower {
+        background: rgba(0, 0, 0, 0);
+      }
+      input[type='range']:focus::-ms-fill-upper {
+        background: rgba(13, 13, 13, 0);
+      }
+
+      .main {
+        display: flex;
+        height: calc(100% - 60px);
+      }
+      .pane {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        z-index: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+      }
+      .gutter {
+        background-color: #444;
+        z-index: 1;
+        background-repeat: no-repeat;
+        background-position: 50%;
+      }
+
+      .gutter.gutter-horizontal {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+
+        cursor: col-resize;
+      }
+
+      .gutter.gutter-vertical {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
+
+        cursor: row-resize;
+        height: 10px;
+      }
+
+      .viz-title {
+        text-transform: uppercase;
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        z-index: 5;
+        margin: 0;
+      }
+
+      .location-form {
+        position: absolute;
+        bottom: 0.5rem;
+        right: 0.5rem;
+        z-index: 5;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <div>
+        <div id="start-stop">▶</div>
+      </div>
+      <div>
+        <span class="label"> Speed </span>
+        <span id="speed-display" class="display"></span>
+        <input type="range" id="speed-slider" value="0" />
+      </div>
+      <div>
+        <span class="label">Date</span>
+        <input type="text" id="date-display" class="display" />
+        <input type="range" id="date-slider" />
+      </div>
+      <div>
+        <span class="label">Local Time</span>
+        <input type="text" id="time-display" class="display" />
+        <input type="range" id="time-slider" />
+      </div>
+    </div>
+    <div class="main">
+      <div class="pane pane-1">
+        <p class="viz-title">Solar system</p>
+        <canvas id="c1" tabindex="-1"></canvas>
+      </div>
+      <div class="pane pane-2">
+        <div class="pane pane-2a">
+          <p class="viz-title">Celestial sphere</p>
+          <canvas id="c2" tabindex="-1"></canvas>
+        </div>
+        <div class="pane pane-2b">
+          <p class="viz-title">Local sky</p>
+          <p class="location-form">
+            Location: <input id="location" value="31.7683, 35.2137" />
+          </p>
+          <canvas id="c3" tabindex="-1"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script src="vendor/topojson-client.min.js"></script>
+    <script src="vendor/three.102.min.js"></script>
+    <script src="vendor/OrbitControls.101.js"></script>
+    <script src="vendor/split.min.js"></script>
+    <script type="module" src="js/index.js"></script>
+  </body>
+</html>
