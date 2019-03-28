@@ -1,3 +1,4 @@
+import { path } from '../path.js';
 import { getMoonLongitude } from '../astro/moon.js';
 import { getSunLongitude } from '../astro/sun.js';
 import { ERA } from '../astro/earth.js';
@@ -69,7 +70,7 @@ export default function Viz(index) {
   constellations.rotation.z = -EARTH_TILT * DEG;
   scene.add(constellations);
 
-  var sunMap = new THREE.TextureLoader().load('../img/sun.png');
+  var sunMap = new THREE.TextureLoader().load(path + '/img/sun.png');
   var sunMaterial = new THREE.SpriteMaterial({ map: sunMap });
   var sun = new THREE.Sprite(sunMaterial);
   sun.scale.set(SUN_RADIUS * 4, SUN_RADIUS * 4, 1);
@@ -77,7 +78,7 @@ export default function Viz(index) {
 
   var earth = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS, 30, 30),
-    LambertTextureMaterial('../img/earth-day.jpg', '../img/earth-night.jpg', {
+    LambertTextureMaterial(path + '/img/earth-day.jpg', path + '/img/earth-night.jpg', {
       invert: true
     })
   );
@@ -96,7 +97,7 @@ export default function Viz(index) {
 
   var moon = new THREE.Mesh(
     new THREE.SphereGeometry(MOON_RADIUS, 30, 30),
-    LambertTextureMaterial('../img/moon-day.jpg', '../img/moon-night.jpg', {
+    LambertTextureMaterial(path + '/img/moon-day.jpg', path + '/img/moon-night.jpg', {
       invert: true
     })
   );
