@@ -174,7 +174,7 @@ export default function Viz(index) {
 
   scene.add(observer);
 
-  celestialSphere.add(makeStarField(EARTH_DISTANCE));
+  // celestialSphere.add(makeStarField(EARTH_DISTANCE));
 
   return {
     update({ t, hide, location }) {

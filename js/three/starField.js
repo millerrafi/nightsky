@@ -88,7 +88,10 @@ function bv_to_rgb(bv) {
   return [R, G, B];
 }
 
-export default function makeStarField(radius) {
+export default function makeStarField(radius, options = {}) {
+  const maxSize = options.maxSize || 3;
+  const minSize = options.minSize || 0.5;
+
   const shaderMaterial = new THREE.ShaderMaterial({
     vertexShader,
     fragmentShader,
@@ -126,7 +129,7 @@ export default function makeStarField(radius) {
       colors.push(g);
       colors.push(b);
 
-      sizes.push(Math.max(3 * Math.exp(-0.1 * mag), 1));
+      sizes.push(Math.max(maxSize * Math.exp(-0.1 * mag), minSize));
       alphas.push(Math.exp(-0.2 * (mag - 4)));
       // alphas.push((14 - mag) / 14);
     }

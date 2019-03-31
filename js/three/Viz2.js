@@ -149,7 +149,7 @@ export default function Viz(index) {
   equator.rotation.x = Math.PI / 2;
   scene.add(equator);
 
-  scene.add(makeStarField(EARTH_DISTANCE))
+  // scene.add(makeStarField(EARTH_DISTANCE, { maxSize: 1 }));
 
   return {
     update({ t, hide }) {
