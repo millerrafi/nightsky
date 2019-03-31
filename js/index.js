@@ -37,6 +37,9 @@ window.addEventListener('keydown', e => {
     case 'o':
       toHide = 'orbits';
       break;
+    case 's':
+      toHide = 'stars';
+      break;
 
     default:
   }
@@ -46,25 +49,46 @@ window.addEventListener('keydown', e => {
   }
 });
 
+let sizes = localStorage.getItem('split-sizes');
+// let sizes = null;
+
+if (sizes) {
+  sizes = JSON.parse(sizes);
+} else {
+  sizes = { 1: [20, 80], 2: [20, 80] };
+}
+
 Split(['.pane-1', '.pane-2'], {
   // sizes: [60, 40],
-  sizes: [20, 80],
+  sizes: sizes[1],
   minSize: [0, 0],
-  onDrag: onResize
+  onDrag: onResize,
+  onDragEnd: onDragEnd(1)
 });
 
 Split(['.pane-2a', '.pane-2b'], {
   // sizes: [50, 50],
-  sizes: [20, 80],
+  sizes: sizes[2],
   minSize: [0, 0],
   direction: 'vertical',
-  onDrag: onResize
+  onDrag: onResize,
+  onDragEnd: onDragEnd(2)
 });
 
-function onResize() {
+function onResize(id) {
   viz1.onResize();
   viz2.onResize();
   viz3.onResize();
+}
+
+function onDragEnd(id) {
+  return function(newSizes) {
+    sizes[id] = newSizes;
+
+    console.log(sizes);
+
+    localStorage.setItem('split-sizes', JSON.stringify(sizes));
+  };
 }
 
 onResize();
@@ -80,7 +104,7 @@ const getSpeed = () => {
 
 speedSlider.min = 1;
 speedSlider.max = 2e6;
-speedSlider.value = 1000;
+speedSlider.value = 1;
 
 function updateSpeedDisplay() {
   speedDisplay.textContent =
