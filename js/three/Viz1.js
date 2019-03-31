@@ -14,6 +14,7 @@ import {
   PALETTE
 } from '../constants.js';
 import makeConstellationLines from './makeConstellationLines.js';
+import makeStarField from './starField.js';
 
 import LambertTextureMaterial from './LambertTextureMaterial.js';
 
@@ -69,6 +70,10 @@ export default function Viz(index) {
   const constellations = makeConstellationLines(camera1.position.length());
   constellations.rotation.z = -EARTH_TILT * DEG;
   scene.add(constellations);
+  
+  const starField = makeStarField(camera1.position.length());
+  starField.rotation.z = -EARTH_TILT * DEG;
+  scene.add(starField);
 
   var sunMap = new THREE.TextureLoader().load(path + '/img/sun.png');
   var sunMaterial = new THREE.SpriteMaterial({ map: sunMap });
@@ -78,9 +83,13 @@ export default function Viz(index) {
 
   var earth = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS, 30, 30),
-    LambertTextureMaterial(path + '/img/earth-day.jpg', path + '/img/earth-night.jpg', {
-      invert: true
-    })
+    LambertTextureMaterial(
+      path + '/img/earth-day.jpg',
+      path + '/img/earth-night.jpg',
+      {
+        invert: true
+      }
+    )
   );
   scene.add(earth);
 
@@ -97,9 +106,13 @@ export default function Viz(index) {
 
   var moon = new THREE.Mesh(
     new THREE.SphereGeometry(MOON_RADIUS, 30, 30),
-    LambertTextureMaterial(path + '/img/moon-day.jpg', path + '/img/moon-night.jpg', {
-      invert: true
-    })
+    LambertTextureMaterial(
+      path + '/img/moon-day.jpg',
+      path + '/img/moon-night.jpg',
+      {
+        invert: true
+      }
+    )
   );
 
   var moonOrbit = new THREE.Mesh(
@@ -163,6 +176,7 @@ export default function Viz(index) {
       constellations.visible = !hide.constellations;
       moonOrbit.visible = !hide.orbits;
       earthOrbit.visible = !hide.orbits;
+      starField.visible = !hide.stars;
 
       groupEarthMoon.position.x = EARTH_DISTANCE * Math.sin(sunLong);
       groupEarthMoon.position.z = EARTH_DISTANCE * Math.cos(sunLong);

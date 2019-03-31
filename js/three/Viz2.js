@@ -13,6 +13,7 @@ import {
 } from '../constants.js';
 import makeGraticule from '../d3/graticule.js';
 import makeConstellationLines from './makeConstellationLines.js';
+import makeStarField from './starField.js';
 import wireframe from '../d3/wireframe.js';
 import LambertTextureMaterial from './LambertTextureMaterial.js';
 
@@ -89,7 +90,7 @@ export default function Viz(index) {
   eclipticPlane.rotation.x = Math.PI / 2;
 
   var moon = new THREE.Mesh(
-    new THREE.SphereGeometry(MOON_RADIUS, 30, 30),
+    new THREE.SphereGeometry(MOON_RADIUS * 2, 30, 30),
     LambertTextureMaterial(
       path + '/img/moon-day.jpg',
       path + '/img/moon-night.jpg'
@@ -147,6 +148,8 @@ export default function Viz(index) {
 
   equator.rotation.x = Math.PI / 2;
   scene.add(equator);
+
+  // scene.add(makeStarField(EARTH_DISTANCE, { maxSize: 1 }));
 
   return {
     update({ t, hide }) {

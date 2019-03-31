@@ -13,6 +13,7 @@ import {
 import makeGraticule from '../d3/graticule.js';
 import makeHorizon from '../d3/horizon.js';
 import makeConstellationLines from './makeConstellationLines.js';
+import makeStarField from './starField.js';
 import LambertTextureMaterial from './LambertTextureMaterial.js';
 
 export default function Viz(index) {
@@ -83,15 +84,18 @@ export default function Viz(index) {
   // celestialSphere.add(mesh);
 
   var moon = new THREE.Mesh(
-    new THREE.SphereGeometry(MOON_RADIUS, 30, 30),
-    LambertTextureMaterial(path + '/img/moon-day.jpg', path + '/img/moon-night.jpg')
+    new THREE.SphereGeometry(MOON_RADIUS * 2, 30, 30),
+    LambertTextureMaterial(
+      path + '/img/moon-day.jpg',
+      path + '/img/moon-night.jpg'
+    )
   );
 
   var moonOrbit = new THREE.Mesh(
     new THREE.TorusGeometry(EARTH_DISTANCE, 0.1, 16, 100),
     new THREE.MeshBasicMaterial({
-      color: PALETTE.MOON,
-      side: THREE.DoubleSide
+      color: PALETTE.MOON
+      // side: THREE.DoubleSide
     })
   );
   moonOrbit.rotation.x = Math.PI / 2;
@@ -169,6 +173,8 @@ export default function Viz(index) {
   observer.position.set(0, height / 2, 0);
 
   scene.add(observer);
+
+  // celestialSphere.add(makeStarField(EARTH_DISTANCE));
 
   return {
     update({ t, hide, location }) {
