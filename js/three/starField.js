@@ -5,24 +5,124 @@ const vertexShader = `
   varying float vAlpha;
   attribute float size;
   varying float vSize;
+  attribute vec3 vertexnormal;
+  varying vec3 vNormal;
   varying vec3 vColor;
+  varying vec3 vPos;
+  varying vec3 cameraVector;
   void main() {
     vColor = color;
     vAlpha = alpha;
     vSize = size;
+    vNormal = vertexnormal;
+    cameraVector = cameraPosition - vPos;
+    vPos = (modelViewMatrix * vec4(position, 1.0)).xyz;
     vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
     gl_PointSize = vSize;
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
 
-const fragmentShader = `
-  varying vec3 vColor;
-  varying float vAlpha;
-  void main() {
-    gl_FragColor = vec4( vColor, vAlpha );
+const getFragmentShader = ({ dot }) =>
+  !dot
+    ? `
+      varying vec3 vColor;
+      varying float vAlpha;
+      void main() {
+        gl_FragColor = vec4( vColor, vAlpha );
+      }
+    `
+    : `
+      varying vec3 vColor;
+      varying vec3 vPos;
+      varying float vAlpha;
+      varying vec3 vNormal;
+      varying vec3 cameraVector;
+      void main() {
+        // vec3 vNormal2 = vec3(vNormal.x, vNormal.y, -1.0 * vNormal.z);
+        float fDot = dot(normalize(cameraVector), vNormal);
+        gl_FragColor = vec4( vColor, vAlpha * clamp(-fDot, 0.0, 1.0) );
+      }
+    `;
+
+const clamp = (x, a, b) => Math.max(a, Math.min(x, b));
+
+export default function makeStarField(radius, options = {}) {
+  const minSize = options.minSize || 0.5;
+  const scalePoint = options.scalePoint || (mag => 5 * Math.exp(-0.2 * mag));
+  const fadePoint = options.scalePoint || (mag => Math.exp(-0.2 * (mag - 4)));
+  const dot = options.dot || false;
+
+  const shaderMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      dot
+    },
+    vertexShader,
+    fragmentShader: getFragmentShader({ dot }),
+    blending: options.additive ? THREE.AdditiveBlending : THREE.NormalBlending,
+    // depthTest: false,
+    transparent: true,
+    vertexColors: true
+  });
+
+  const geometry = new THREE.BufferGeometry();
+  const positions = [];
+  const normals = [];
+  const colors = [];
+  const alphas = [];
+  const sizes = [];
+
+  for (let i = 0, len = stars.length; i < len; i++) {
+    const [mag, bv, long, lat] = stars[i];
+
+    const lambda = -(long * Math.PI) / 180;
+    const phi = (lat * Math.PI) / 180;
+    const cosPhi = Math.cos(phi);
+
+    const x = radius * cosPhi * Math.cos(lambda);
+    const z = radius * cosPhi * Math.sin(lambda);
+    const y = radius * Math.sin(phi);
+
+    const [r, g, b] = bv_to_rgb(bv);
+
+    if (x > -radius * 1.1 && y > -radius * 1.1 && z > -radius * 1.1) {
+      positions.push(x);
+      positions.push(y);
+      positions.push(z);
+
+      const normal = new THREE.Vector3(x, y, z).normalize();
+
+      normals.push(normal.x);
+      normals.push(normal.y);
+      normals.push(normal.z);
+
+      colors.push(r);
+      colors.push(g);
+      colors.push(b);
+
+      sizes.push(Math.max(scalePoint(mag), minSize));
+      alphas.push(clamp(fadePoint(mag), 0, 1));
+      // alphas.push((14 - mag) / 14);
+    }
   }
-`;
+
+  geometry.addAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(positions, 3)
+  );
+
+  geometry.addAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geometry.addAttribute(
+    'vertexnormal',
+    new THREE.Float32BufferAttribute(normals, 3)
+  );
+  geometry.addAttribute('alpha', new THREE.Float32BufferAttribute(alphas, 1));
+  geometry.addAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+  console.log(geometry);
+
+  return new THREE.Points(geometry, shaderMaterial);
+}
 
 function bv_to_rgb(bv) {
   var t = 4600 * (1 / (0.92 * bv + 1.7) + 1 / (0.92 * bv + 0.62));
@@ -86,65 +186,4 @@ function bv_to_rgb(bv) {
   var B = b <= 0.0031308 ? 12.92 * b : 1.055 * Math.pow(b, 1 / 2.4) - 0.055;
 
   return [R, G, B];
-}
-
-export default function makeStarField(radius, options = {}) {
-  const maxSize = options.maxSize || 3;
-  const minSize = options.minSize || 0.5;
-
-  const shaderMaterial = new THREE.ShaderMaterial({
-    vertexShader,
-    fragmentShader,
-    // blending: THREE.AdditiveBlending,
-    // depthTest: false,
-    transparent: true,
-    vertexColors: true
-  });
-
-  const geometry = new THREE.BufferGeometry();
-  const positions = [];
-  const colors = [];
-  const alphas = [];
-  const sizes = [];
-
-  for (let i = 0, len = stars.length; i < len; i++) {
-    const [mag, bv, long, lat] = stars[i];
-
-    const lambda = -(long * Math.PI) / 180;
-    const phi = (lat * Math.PI) / 180;
-    const cosPhi = Math.cos(phi);
-
-    const x = radius * cosPhi * Math.cos(lambda);
-    const z = radius * cosPhi * Math.sin(lambda);
-    const y = radius * Math.sin(phi);
-
-    const [r, g, b] = bv_to_rgb(bv);
-
-    if (x && y && z) {
-      positions.push(x);
-      positions.push(y);
-      positions.push(z);
-
-      colors.push(r);
-      colors.push(g);
-      colors.push(b);
-
-      sizes.push(Math.max(maxSize * Math.exp(-0.1 * mag), minSize));
-      alphas.push(Math.exp(-0.2 * (mag - 4)));
-      // alphas.push((14 - mag) / 14);
-    }
-  }
-
-  geometry.addAttribute(
-    'position',
-    new THREE.Float32BufferAttribute(positions, 3)
-  );
-
-  geometry.addAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-  geometry.addAttribute('alpha', new THREE.Float32BufferAttribute(alphas, 1));
-  geometry.addAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
-
-  console.log(geometry);
-
-  return new THREE.Points(geometry, shaderMaterial);
 }

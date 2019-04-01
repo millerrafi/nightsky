@@ -139,7 +139,7 @@ export default function Viz(index) {
   scene.add(constellations);
 
   var equator = new THREE.Mesh(
-    new THREE.TorusGeometry(EARTH_DISTANCE, 0.1, 16, 100),
+    new THREE.TorusGeometry(EARTH_DISTANCE, 0.4, 16, 100),
     new THREE.MeshBasicMaterial({
       color: PALETTE.EQUATOR,
       side: THREE.DoubleSide
@@ -149,7 +149,15 @@ export default function Viz(index) {
   equator.rotation.x = Math.PI / 2;
   scene.add(equator);
 
-  // scene.add(makeStarField(EARTH_DISTANCE, { maxSize: 1 }));
+  scene.add(
+    makeStarField(EARTH_DISTANCE, {
+      maxSize: 1,
+      dot: true,
+      additive: true,
+      scalePoint: mag => 2 * Math.exp(-0.1 * mag)
+      // scalePoint: mag => 2
+    })
+  );
 
   return {
     update({ t, hide }) {

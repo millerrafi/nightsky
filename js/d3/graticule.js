@@ -18,7 +18,7 @@ export default function graticule(radius) {
     radius,
     new THREE.LineBasicMaterial({
       color: PALETTE.EQUATOR,
-      opacity: 0.7,
+      opacity: 1,
       transparent: true
     })
   );
