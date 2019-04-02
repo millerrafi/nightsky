@@ -55,9 +55,7 @@ const getFragmentShader = ({ dot }) =>
       varying float fDot;
       
       void main() {
-        // float fDot = dot(vNormal, vec3(0.0,0.0,1.0));
-        gl_FragColor = vec4( vColor, vAlpha * - clamp(fDot, -1.0, 0.0) );
-        // gl_FragColor = vec4(  - clamp(fDot, -1.0, 0.0), clamp(fDot, 0.0, 1.0), 0.0, 0.5);
+        gl_FragColor = vec4( vColor, 0.1 + 0.9 * vAlpha * - clamp(fDot, -1.0, 0.0) );
       }
     `;
 
@@ -75,7 +73,7 @@ export default function makeStarField(radius, options = {}) {
     },
     vertexShader,
     fragmentShader: getFragmentShader({ dot }),
-    blending: options.additive ? THREE.AdditiveBlending : THREE.NormalBlending,
+    // blending: options.additive ? THREE.AdditiveBlending : THREE.NormalBlending,
     // depthTest: false,
     transparent: true,
     vertexColors: true
