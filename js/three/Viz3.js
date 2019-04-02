@@ -174,14 +174,13 @@ export default function Viz(index) {
 
   scene.add(observer);
 
-  celestialSphere.add(
-    makeStarField(EARTH_DISTANCE, {
-      maxSize: 1,
-      dot: true,
-      additive: true,
-      scalePoint: mag => 2 * Math.exp(-0.1 * mag)
-    })
-  );
+  const starField = makeStarField(EARTH_DISTANCE, {
+    maxSize: 1,
+    dot: true,
+    additive: true,
+    scalePoint: mag => 2 * Math.exp(-0.1 * mag)
+  });
+  celestialSphere.add(starField);
 
   // celestialSphere.add(makeStarField(EARTH_DISTANCE));
 

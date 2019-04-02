@@ -103,7 +103,7 @@ const getSpeed = () => {
 };
 
 speedSlider.min = 1;
-speedSlider.max = 2e6;
+speedSlider.max = 1e5;
 speedSlider.value = 1;
 
 function updateSpeedDisplay() {
