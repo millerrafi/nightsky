@@ -23,15 +23,15 @@ const vertexShader = `
     vPos = (modelViewMatrix * vec4(position, 1.0)).xyz;
     vNormal = normalize(modelViewMatrix * vec4(vertexnormal, 0.0)).xyz;
     vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-    float fDot = dot(vNormal, vec3( 0.0, 0.0, 1.0 ));
+    fDot = dot(vNormal, vec3( 0.0, 0.0, 1.0 ));
     // gl_PointSize = 2.0;
     gl_PointSize = vSize;
     // gl_Position = projectionMatrix * mvPosition;
 
     
-    // if ( fDot > 0.0 )
-    //   gl_Position = vec4(2.0, 0.0, 0.0, 1.0);
-    // else
+    if ( fDot > 0.0 )
+      gl_Position = vec4(2.0, 0.0, 0.0, 1.0);
+    else
       gl_Position = projectionMatrix * mvPosition;
   }
 `;
@@ -52,10 +52,10 @@ const getFragmentShader = ({ dot }) =>
       varying vec3 vNormal;
       varying vec3 cameraVector;
       varying vec3 vCameraPos;
-      // varying float fDot;
+      varying float fDot;
       
       void main() {
-        float fDot = dot(vNormal, vec3(0.0,0.0,1.0));
+        // float fDot = dot(vNormal, vec3(0.0,0.0,1.0));
         gl_FragColor = vec4( vColor, vAlpha * - clamp(fDot, -1.0, 0.0) );
         // gl_FragColor = vec4(  - clamp(fDot, -1.0, 0.0), clamp(fDot, 0.0, 1.0), 0.0, 0.5);
       }
