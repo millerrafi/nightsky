@@ -1,5 +1,4 @@
 import { stars } from '../astro/stars14.js';
-
 const vertexShader = `
   attribute float alpha;
   varying float vAlpha;
@@ -10,16 +9,30 @@ const vertexShader = `
   varying vec3 vColor;
   varying vec3 vPos;
   varying vec3 cameraVector;
+  varying vec3 vCameraPos;  
+  varying float fDot;
+  // uniform vec3 Z = vec3( 0.0, 0.0, 1.0 );
+
   void main() {
     vColor = color;
     vAlpha = alpha;
     vSize = size;
     vNormal = vertexnormal;
+    vCameraPos = cameraPosition;
     cameraVector = cameraPosition - vPos;
     vPos = (modelViewMatrix * vec4(position, 1.0)).xyz;
+    vNormal = normalize(modelViewMatrix * vec4(vertexnormal, 0.0)).xyz;
     vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+    fDot = dot(vNormal, vec3( 0.0, 0.0, 1.0 ));
+    // gl_PointSize = 2.0;
     gl_PointSize = vSize;
-    gl_Position = projectionMatrix * mvPosition;
+    // gl_Position = projectionMatrix * mvPosition;
+
+    
+    if ( fDot > 0.0 )
+      gl_Position = vec4(2.0, 0.0, 0.0, 1.0);
+    else
+      gl_Position = projectionMatrix * mvPosition;
   }
 `;
 
@@ -38,10 +51,11 @@ const getFragmentShader = ({ dot }) =>
       varying float vAlpha;
       varying vec3 vNormal;
       varying vec3 cameraVector;
+      varying vec3 vCameraPos;
+      varying float fDot;
+      
       void main() {
-        // vec3 vNormal2 = vec3(vNormal.x, vNormal.y, -1.0 * vNormal.z);
-        float fDot = dot(normalize(cameraVector), vNormal);
-        gl_FragColor = vec4( vColor, vAlpha * clamp(-fDot, 0.0, 1.0) );
+        gl_FragColor = vec4( vColor, 0.1 + 0.9 * vAlpha * - clamp(fDot, -1.0, 0.0) );
       }
     `;
 
@@ -59,7 +73,7 @@ export default function makeStarField(radius, options = {}) {
     },
     vertexShader,
     fragmentShader: getFragmentShader({ dot }),
-    blending: options.additive ? THREE.AdditiveBlending : THREE.NormalBlending,
+    // blending: options.additive ? THREE.AdditiveBlending : THREE.NormalBlending,
     // depthTest: false,
     transparent: true,
     vertexColors: true

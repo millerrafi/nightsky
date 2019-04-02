@@ -59,7 +59,8 @@ export default function Viz(index) {
 
   var sun = new THREE.Sprite(
     new THREE.SpriteMaterial({
-      map: new THREE.TextureLoader().load(path + '/img/sun.png')
+      map: new THREE.TextureLoader().load(path + '/img/sun.png'),
+      blending: THREE.AdditiveBlending
     })
   );
   sun.scale.set(SUN_RADIUS * 2, SUN_RADIUS * 2, 1);
@@ -153,8 +154,9 @@ export default function Viz(index) {
     makeStarField(EARTH_DISTANCE, {
       maxSize: 1,
       dot: true,
-      additive: true,
-      scalePoint: mag => 2 * Math.exp(-0.1 * mag)
+      // additive: true,
+      scalePoint: mag => 3 * Math.exp(-0.2 * mag),
+      fadePoint: (mag => Math.exp(-8 * (mag - 2)))
       // scalePoint: mag => 2
     })
   );
