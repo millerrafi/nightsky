@@ -57,14 +57,30 @@ export default function Viz(index) {
   var ground = new THREE.Mesh(
     new THREE.CircleGeometry(EARTH_DISTANCE, 64),
     new THREE.MeshBasicMaterial({
-      color: PALETTE.GROUND,
-      side: THREE.DoubleSide,
-      transparent: true
+      color: 0xaa0000,
+      // color: PALETTE.GROUND,
+      transparent: true,
+      opacity: 0.6
     })
   );
 
   scene.add(ground);
-  ground.rotation.x = Math.PI / 2;
+  ground.renderOrder = 1;
+  ground.rotation.x = -Math.PI / 2;
+
+  const underground = ground.clone();
+
+  underground.material = new THREE.MeshBasicMaterial({
+    color: 0xaa0000,
+    // color: PALETTE.GROUND,
+    blending: THREE.additiveBlending,
+    transparent: true,
+    opacity: 0.2
+  });
+
+  underground.rotation.x = Math.PI / 2;
+  underground.renderOrder = 1;
+  scene.add(underground);
 
   var sunMap = new THREE.TextureLoader().load(path + '/img/sun.png');
   var sunMaterial = new THREE.SpriteMaterial({ map: sunMap });
@@ -134,7 +150,9 @@ export default function Viz(index) {
     new THREE.TorusGeometry(EARTH_DISTANCE, 0.2, 16, 100),
     new THREE.MeshBasicMaterial({
       color: PALETTE.EQUATOR,
-      side: THREE.DoubleSide
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.9
     })
   );
   equator.rotation.x = Math.PI / 2;
@@ -178,7 +196,7 @@ export default function Viz(index) {
     maxSize: 1,
     dot: true,
     additive: true,
-    scalePoint: mag => 2 * Math.exp(-0.1 * mag)
+    scalePoint: mag => 3 * Math.exp(-0.2 * mag)
   });
   celestialSphere.add(starField);
 

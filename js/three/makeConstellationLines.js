@@ -6,9 +6,10 @@ export default function makeConstellationLines(radius) {
     topojson.mesh(constellationLines),
     radius,
     new THREE.LineBasicMaterial({
-      color: 0xaaaaaa,
+      color: 0x666666,
       opacity: 0.5,
-      transparent: true
+      transparent: true,
+      blending: THREE.additiveBlending
     })
   );
 }
