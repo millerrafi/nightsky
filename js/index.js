@@ -12,6 +12,20 @@ const dateDisplay = document.getElementById('date-display');
 const timeDisplay = document.getElementById('time-display');
 const locationInput = document.getElementById('location');
 
+let isShiftDown = false;
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Shift') {
+    isShiftDown = true;
+  }
+});
+
+window.addEventListener('keyup', e => {
+  if (e.key === 'Shift') {
+    isShiftDown = false;
+  }
+});
+
 const viz1 = new Viz1('1');
 const viz2 = new Viz2('2');
 const viz3 = new Viz3('3');
@@ -163,10 +177,12 @@ dateSlider.onmousedown = e => {
 };
 
 dateSlider.oninput = e => {
-  if (1) {
+  if (isShiftDown) {
     const time = getHHMMSS(+timeSlider.value, { inUTC: true });
     const date = getYYYYMMDD(+dateSlider.value);
     timer.setValue(+new Date(`${date}Z${time}`));
+  } else {
+    timer.setValue(+dateSlider.value);
   }
 };
 
