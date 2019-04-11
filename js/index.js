@@ -3,6 +3,7 @@ import Viz1 from './three/Viz1.js';
 import Viz2 from './three/Viz2.js';
 import Viz3 from './three/Viz3.js';
 import { DAYS } from './constants.js';
+import { path } from './path.js';
 
 const speedSlider = document.getElementById('speed-slider');
 const dateSlider = document.getElementById('date-slider');
@@ -10,7 +11,32 @@ const timeSlider = document.getElementById('time-slider');
 const speedDisplay = document.getElementById('speed-display');
 const dateDisplay = document.getElementById('date-display');
 const timeDisplay = document.getElementById('time-display');
-const locationInput = document.getElementById('location');
+const coordsMarker = document.getElementById('coords-marker');
+
+const coordsInput = document.getElementById('coords-input');
+coordsInput.style = `
+  background: #333 url(${path}/img/earth-night.jpg);
+  background-size: cover;
+`;
+
+const handleMouseOnCoordsInput = ({ clientX, clientY }) => {
+  const { left, top, width, height } = coordsInput.getBoundingClientRect();
+  const x = (clientX - left) / width;
+  const y = (clientY - top) / height;
+
+  const location = [90 - y * 180, x * 360 - 180];
+
+  setLocation(location);
+};
+
+coordsInput.addEventListener('mousedown', e => {
+  handleMouseOnCoordsInput(e);
+  coordsInput.addEventListener('mousemove', handleMouseOnCoordsInput);
+});
+
+document.addEventListener('mouseup', e => {
+  coordsInput.removeEventListener('mousemove', handleMouseOnCoordsInput);
+});
 
 let isShiftDown = false;
 
@@ -234,17 +260,15 @@ function updateTimeSlider(t) {
 
 const location = {};
 
-function setLocation() {
-  const arr = locationInput.value.split(',');
+function setLocation(arr) {
   if (arr.length !== 2) {
     return;
   }
-  location.lat = arr[0].trim();
-  location.long = arr[1].trim();
+  location.lat = +arr[0];
+  location.long = +arr[1];
 }
 
-setLocation();
-locationInput.oninput = setLocation;
+setLocation([31.7683, 35.2137]);
 
 timer.start();
 animate();
@@ -260,6 +284,12 @@ function formatTimeDisplay(t) {
   return `${getHHMMSS(t)} (${timezoneString})`;
 }
 
+function updateCoordsMarker({ lat, long }) {
+  const cmx = (long / 360 + 0.5) * 100;
+  const cmy = ((90 - lat) / 180) * 100;
+  coordsMarker.style.transform = `translate(${cmx}%, ${cmy}%)`;
+}
+
 function animate() {
   requestAnimationFrame(animate);
   const t = timer.state.value;
@@ -268,6 +298,7 @@ function animate() {
   setIfNotFocused(timeDisplay, t, formatTimeDisplay);
   updateDateSlider(t);
   updateTimeSlider(t);
+  updateCoordsMarker(location);
 
   viz1.update({ t, location, hide });
   viz2.update({ t, location, hide });

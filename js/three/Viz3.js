@@ -25,6 +25,8 @@ export default function Viz(index) {
   const WIDTH = BCR.width;
   const HEIGHT = BCR.height;
 
+  // coordsInput.
+
   // Set some camera attributes.
   const VIEW_ANGLE = 15;
   const ASPECT = WIDTH / HEIGHT;

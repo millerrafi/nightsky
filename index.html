@@ -210,13 +210,29 @@
         z-index: 5;
         margin: 0;
       }
-
-      .location-form {
+      
+      #coords-input {
+        width: 30vh;
+        height: 15vh;
         position: absolute;
-        bottom: 0.5rem;
-        right: 0.5rem;
-        z-index: 5;
-        margin: 0;
+        bottom: 24px;
+        right: 24px;
+      }
+
+      #coords-marker {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: -50%;
+        left: -50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: red;
+        user-select: none;
+        pointer-events: none;
+        cursor: pointer;
       }
     </style>
   </head>
@@ -253,10 +269,10 @@
         </div>
         <div class="pane pane-2b">
           <p class="viz-title">Local sky</p>
-          <p class="location-form">
-            Location: <input id="location" value="31.7683, 35.2137" />
-          </p>
           <canvas id="c3" tabindex="-1"></canvas>
+          <div id="coords-input">
+            <div id="coords-marker">⊕</div>
+          </div>
         </div>
       </div>
     </div>
