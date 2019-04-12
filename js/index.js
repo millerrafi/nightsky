@@ -279,7 +279,7 @@ function formatDateDisplay(t) {
 
 function formatTimeDisplay(t) {
   const tzo = new Date(t).getTimezoneOffset();
-  const timezoneString = `UTC${tzo >= 0 ? '-' : '+'}${tzo / -60}`;
+  const timezoneString = `UTC${tzo >= 0 ? '-' : '+'}${Math.abs(tzo / 60)}`;
 
   return `${getHHMMSS(t)} (${timezoneString})`;
 }
