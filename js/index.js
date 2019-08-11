@@ -144,19 +144,47 @@ const setTimerRate = () => {
 
 const speedSlider = new Range(document.getElementById('speed-slider'), {
   onUpdate: setTimerRate,
-  min: 1,
-  max: 1e5,
-  value: 1
+  min: 0,
+  max: 1,
+  value: 0
 });
 
 const getSpeed = () => {
-  const speed = +speedSlider.value;
-  return speed;
+  const MIN = 1;
+  const MAX = 60 * 60 * 24 * 7;
+
+  // scale input value quadratically from MIN to MAX
+  return Math.pow(+speedSlider.value, 2) * (MAX - MIN) + MIN;
+};
+
+const renderSpeed = str => {
+  speedDisplay.textContent = str;
 };
 
 function updateSpeedDisplay() {
-  speedDisplay.textContent =
-    'x' + Math.round(+getSpeed().toPrecision(2)).toLocaleString();
+  const scale = +getSpeed();
+
+  if (scale === 1) {
+    renderSpeed('x1');
+    return;
+  }
+
+  if (scale < 60) {
+    renderSpeed('x' + scale.toFixed(1));
+    return;
+  }
+
+  if (scale < 60 * 60) {
+    renderSpeed((scale / 60).toFixed(1) + ' min/s');
+    return;
+  }
+
+  if (scale < 60 * 60 * 24) {
+    renderSpeed((scale / 60 / 60).toFixed(1) + ' hr/s');
+    return;
+  }
+
+  renderSpeed((scale / 60 / 60 / 24).toFixed(1) + ' days/s');
 }
 
 updateSpeedDisplay();
@@ -176,7 +204,6 @@ window.timer = timer;
 
 startStopButton.onclick = () => timer.toggle();
 
-speedSlider.oninput = setTimerRate;
 setTimerRate();
 
 function setIfNotFocused(el, val, process) {
@@ -209,32 +236,11 @@ const dateSlider = new Range(document.getElementById('date-slider'), {
   }
 });
 
-console.log({ dateSlider });
-
 const timeSlider = new Range(document.getElementById('time-slider'), {
   onUpdate: v => {
     timer.setValue(+timeSlider.value);
   }
 });
-
-// let seekingTime = false;
-
-// timeSlider.onmousedown = e => {
-//   seekingTime = true;
-//   timer.setValue(+timeSlider.value);
-//   timer.stop();
-// };
-
-// timeSlider.oninput = e => {
-//   if (1) {
-//     timer.setValue(+timeSlider.value);
-//   }
-// };
-
-// timeSlider.onmouseup = e => {
-//   seekingTime = false;
-//   timer.start();
-// };
 
 function updateDateSlider(t) {
   if (!dateSlider.isSeeking) {
