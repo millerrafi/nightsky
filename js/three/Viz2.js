@@ -1,7 +1,4 @@
 import { path } from '../path.js';
-import { getMoonLongitude } from '../astro/moon.js';
-import { getSunLongitude } from '../astro/sun.js';
-import { ERA } from '../astro/earth.js';
 import {
   DEG,
   EARTH_DISTANCE,
@@ -156,15 +153,15 @@ export default function Viz(index) {
       dot: true,
       // additive: true,
       scalePoint: mag => 3 * Math.exp(-0.2 * mag),
-      fadePoint: (mag => Math.exp(-8 * (mag - 2)))
+      fadePoint: mag => Math.exp(-8 * (mag - 2))
       // scalePoint: mag => 2
     })
   );
 
   return {
-    update({ t, hide }) {
-      const sunLong = getSunLongitude(t) + Math.PI;
-      const moonLong = getMoonLongitude(t) + Math.PI;
+    update({ positions, hide }) {
+      const sunLong = positions.Sun.longitude * DEG + Math.PI;
+      const moonLong = positions.Moon.longitude * DEG + Math.PI;
 
       constellations.visible = !hide.constellations;
       moonOrbit.visible = !hide.orbits;
@@ -176,7 +173,7 @@ export default function Viz(index) {
       sun.position.z = EARTH_DISTANCE * Math.cos(sunLong);
 
       // pi/2 correction for shader texture
-      earth.rotation.y = ERA(t) + Math.PI * 0.5;
+      earth.rotation.y = positions.Earth.rotationAngle * DEG + Math.PI * 0.5;
 
       moon.position.x = EARTH_DISTANCE * Math.sin(moonLong);
       moon.position.z = EARTH_DISTANCE * Math.cos(moonLong);

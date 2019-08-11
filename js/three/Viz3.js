@@ -1,7 +1,4 @@
 import { path } from '../path.js';
-import { getMoonLongitude } from '../astro/moon.js';
-import { getSunLongitude } from '../astro/sun.js';
-import { ERA } from '../astro/earth.js';
 import {
   DEG,
   EARTH_DISTANCE,
@@ -205,9 +202,9 @@ export default function Viz(index) {
   // celestialSphere.add(makeStarField(EARTH_DISTANCE));
 
   return {
-    update({ t, hide, location }) {
-      const sunLong = getSunLongitude(t) + Math.PI;
-      const moonLong = getMoonLongitude(t) + Math.PI;
+    update({ positions, hide, location }) {
+      const sunLong = positions.Sun.longitude * DEG + Math.PI;
+      const moonLong = positions.Moon.longitude * DEG + Math.PI;
 
       constellations.visible = !hide.constellations;
       moonOrbit.visible = !hide.orbits;
@@ -220,7 +217,8 @@ export default function Viz(index) {
       sun.position.z = EARTH_DISTANCE * Math.cos(sunLong);
 
       celestialSphere.rotation.x = (90 - location.lat) * DEG;
-      celestialSphere.rotation.y = -location.long * DEG - ERA(t);
+      celestialSphere.rotation.y =
+        -location.long * DEG - positions.Earth.rotationAngle * DEG;
 
       moon.position.x = EARTH_DISTANCE * Math.sin(moonLong);
       moon.position.z = EARTH_DISTANCE * Math.cos(moonLong);

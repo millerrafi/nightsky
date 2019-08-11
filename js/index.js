@@ -4,6 +4,7 @@ import Viz2 from './three/Viz2.js';
 import Viz3 from './three/Viz3.js';
 import { DAYS } from './constants.js';
 import { path } from './path.js';
+import { getPositions } from './astronomy.js';
 
 const speedSlider = document.getElementById('speed-slider');
 const dateSlider = document.getElementById('date-slider');
@@ -300,9 +301,11 @@ function animate() {
   updateTimeSlider(t);
   updateCoordsMarker(location);
 
-  viz1.update({ t, location, hide });
-  viz2.update({ t, location, hide });
-  viz3.update({ t, location, hide });
+  const positions = getPositions(t);
+
+  viz1.update({ positions, location, hide });
+  viz2.update({ positions, location, hide });
+  viz3.update({ positions, location, hide });
 }
 
 function getYYYYMMDD(date) {

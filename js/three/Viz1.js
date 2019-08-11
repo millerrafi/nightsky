@@ -1,7 +1,4 @@
 import { path } from '../path.js';
-import { getMoonLongitude } from '../astro/moon.js';
-import { getSunLongitude } from '../astro/sun.js';
-import { ERA } from '../astro/earth.js';
 import {
   DEG,
   DAYS,
@@ -70,7 +67,7 @@ export default function Viz(index) {
   const constellations = makeConstellationLines(camera1.position.length());
   constellations.rotation.z = -EARTH_TILT * DEG;
   scene.add(constellations);
-  
+
   const starField = makeStarField(camera1.position.length());
   starField.rotation.z = -EARTH_TILT * DEG;
   scene.add(starField);
@@ -168,9 +165,9 @@ export default function Viz(index) {
   // scene.add(gridYZ);
 
   return {
-    update({ t, hide }) {
-      const sunLong = getSunLongitude(t) + Math.PI;
-      const moonLong = getMoonLongitude(t);
+    update({ positions, hide }) {
+      const sunLong = positions.Sun.longitude * DEG + Math.PI;
+      const moonLong = positions.Moon.longitude * DEG;
 
       gridXZ.visible = !hide.grid;
       constellations.visible = !hide.constellations;
@@ -180,7 +177,7 @@ export default function Viz(index) {
 
       groupEarthMoon.position.x = EARTH_DISTANCE * Math.sin(sunLong);
       groupEarthMoon.position.z = EARTH_DISTANCE * Math.cos(sunLong);
-      earth.rotation.y = ERA(t) + Math.PI * 1.5;
+      earth.rotation.y = positions.Earth.rotationAngle * DEG + Math.PI * 1.5;
 
       // light.target = groupEarthMoon;
       // light.position.set(groupEarthMoon.position);
