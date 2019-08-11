@@ -14,7 +14,7 @@
       body {
         margin: 0;
         height: 100%;
-        background: #333;
+        background: #444;
         color: #ddd;
         font-family: monospace;
         font-size: 16px;
@@ -210,7 +210,7 @@
         z-index: 5;
         margin: 0;
       }
-      
+
       #coords-input {
         width: 30vh;
         height: 15vh;
@@ -234,6 +234,17 @@
         pointer-events: none;
         cursor: pointer;
       }
+
+      .range {
+        background: #333;
+        box-shadow: 0 0 0 1px #222;
+        margin: 0.25em 0;
+        height: 1.5em;
+      }
+
+      .range > div {
+        background: steelblue;
+      }
     </style>
   </head>
   <body>
@@ -244,17 +255,17 @@
       <div>
         <span class="label"> Speed </span>
         <span id="speed-display" class="display"></span>
-        <input type="range" id="speed-slider" value="0" />
+        <div id="speed-slider" class="range"></div>
       </div>
       <div>
         <span class="label">Date</span>
         <input type="text" id="date-display" class="display" />
-        <input type="range" id="date-slider" />
+        <div id="date-slider" class="range"></div>
       </div>
       <div>
         <span class="label">Local Time</span>
         <input type="text" id="time-display" class="display" />
-        <input type="range" id="time-slider" />
+        <div id="time-slider" class="range"></div>
       </div>
     </div>
     <div class="main">

@@ -5,10 +5,8 @@ import Viz3 from './three/Viz3.js';
 import { DAYS } from './constants.js';
 import { path } from './path.js';
 import { getPositions } from './astronomy.js';
+import Range from './utils/Range.js';
 
-const speedSlider = document.getElementById('speed-slider');
-const dateSlider = document.getElementById('date-slider');
-const timeSlider = document.getElementById('time-slider');
 const speedDisplay = document.getElementById('speed-display');
 const dateDisplay = document.getElementById('date-display');
 const timeDisplay = document.getElementById('time-display');
@@ -138,14 +136,23 @@ window.addEventListener('resize', onResize);
 
 const startStopButton = document.getElementById('start-stop');
 
+const setTimerRate = () => {
+  const rate = Math.min(getSpeed(), 1 * DAYS);
+  timer.setRate(rate);
+  updateSpeedDisplay();
+};
+
+const speedSlider = new Range(document.getElementById('speed-slider'), {
+  onUpdate: setTimerRate,
+  min: 1,
+  max: 1e5,
+  value: 1
+});
+
 const getSpeed = () => {
   const speed = +speedSlider.value;
   return speed;
 };
-
-speedSlider.min = 1;
-speedSlider.max = 1e5;
-speedSlider.value = 1;
 
 function updateSpeedDisplay() {
   speedDisplay.textContent =
@@ -169,12 +176,6 @@ window.timer = timer;
 
 startStopButton.onclick = () => timer.toggle();
 
-const setTimerRate = () => {
-  const rate = Math.min(getSpeed(), 1 * DAYS);
-  timer.setRate(rate);
-  updateSpeedDisplay();
-};
-
 speedSlider.oninput = setTimerRate;
 setTimerRate();
 
@@ -196,66 +197,69 @@ dateDisplay.addEventListener('keyup', () => {
   }
 });
 
-let seekingDate = false;
-
-dateSlider.onmousedown = e => {
-  seekingDate = true;
-  timer.stop();
-};
-
-dateSlider.oninput = e => {
-  if (isShiftDown) {
-    const time = getHHMMSS(+timeSlider.value, { inUTC: true });
-    const date = getYYYYMMDD(+dateSlider.value);
-    timer.setValue(+new Date(`${date}Z${time}`));
-  } else {
-    timer.setValue(+dateSlider.value);
+const dateSlider = new Range(document.getElementById('date-slider'), {
+  onUpdate: v => {
+    if (isShiftDown) {
+      const time = getHHMMSS(+timeSlider.value, { inUTC: true });
+      const date = getYYYYMMDD(+v);
+      timer.setValue(+new Date(`${date}Z${time}`));
+    } else {
+      timer.setValue(+v);
+    }
   }
-};
+});
 
-dateSlider.onmouseup = e => {
-  seekingDate = false;
-  timer.start();
-};
+console.log({ dateSlider });
 
-let seekingTime = false;
-
-timeSlider.onmousedown = e => {
-  seekingTime = true;
-  timer.setValue(+timeSlider.value);
-  timer.stop();
-};
-
-timeSlider.oninput = e => {
-  if (1) {
+const timeSlider = new Range(document.getElementById('time-slider'), {
+  onUpdate: v => {
     timer.setValue(+timeSlider.value);
   }
-};
+});
 
-timeSlider.onmouseup = e => {
-  seekingTime = false;
-  timer.start();
-};
+// let seekingTime = false;
+
+// timeSlider.onmousedown = e => {
+//   seekingTime = true;
+//   timer.setValue(+timeSlider.value);
+//   timer.stop();
+// };
+
+// timeSlider.oninput = e => {
+//   if (1) {
+//     timer.setValue(+timeSlider.value);
+//   }
+// };
+
+// timeSlider.onmouseup = e => {
+//   seekingTime = false;
+//   timer.start();
+// };
 
 function updateDateSlider(t) {
-  if (!seekingDate) {
+  if (!dateSlider.isSeeking) {
     const year = new Date(t).getFullYear();
-    const start = +new Date(`${year}-01-01Z0:00:00`);
-    const end = +new Date(`${year}-12-31Z23:59:59`);
-    dateSlider.min = start;
-    dateSlider.max = end;
-    dateSlider.value = t;
+    const min = +new Date(`${year}-01-01Z0:00:00`);
+    const max = +new Date(`${year}-12-31Z23:59:59`);
+
+    dateSlider.set({
+      min,
+      max,
+      value: t
+    });
   }
 }
 
 function updateTimeSlider(t) {
-  if (!seekingTime) {
-    const dateString = getYYYYMMDD(new Date(t).toUTCString().slice(0, 16));
-    const start = +new Date(`${dateString} 0:00:00`);
-    const end = +new Date(`${dateString} 23:59:59`);
-    timeSlider.min = start;
-    timeSlider.max = end;
-    timeSlider.value = t;
+  if (!timeSlider.isSeeking) {
+    const dateString = getYYYYMMDD(new Date(t).toString().slice(0, 16));
+    const min = +new Date(`${dateString} 0:00:00`);
+    const max = +new Date(`${dateString} 23:59:59`);
+    timeSlider.set({
+      min,
+      max,
+      value: t
+    });
   }
 }
 
