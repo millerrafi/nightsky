@@ -1,10 +1,10 @@
-import Timer from './Timer.js';
 import Viz1 from './three/Viz1.js';
 import Viz2 from './three/Viz2.js';
 import Viz3 from './three/Viz3.js';
 import { DAYS } from './constants.js';
 import { path } from './path.js';
 import { getPositions } from './astronomy.js';
+import Timer from './utils/Timer.js';
 import Range from './utils/Range.js';
 
 const speedDisplay = document.getElementById('speed-display');
@@ -137,7 +137,7 @@ window.addEventListener('resize', onResize);
 const startStopButton = document.getElementById('start-stop');
 
 const setTimerRate = () => {
-  const rate = Math.min(getSpeed(), 1 * DAYS);
+  const rate = getSpeed();
   timer.setRate(rate);
   updateSpeedDisplay();
 };
@@ -162,42 +162,40 @@ const renderSpeed = str => {
 };
 
 function updateSpeedDisplay() {
-  const scale = +getSpeed();
+  const s = +getSpeed();
 
-  if (scale === 1) {
-    renderSpeed('x1');
-    return;
+  switch (true) {
+    case s === 1:
+      renderSpeed('x1');
+      return;
+
+    case s < 60:
+      renderSpeed('x' + s.toFixed(1));
+      return;
+
+    case s < 60 * 60:
+      renderSpeed((s / 60).toFixed(1) + ' min/s');
+      return;
+
+    case s < 60 * 60 * 24:
+      renderSpeed((s / 60 / 60).toFixed(1) + ' hr/s');
+      return;
+
+    default:
+      renderSpeed((s / 60 / 60 / 24).toFixed(1) + ' days/s');
   }
-
-  if (scale < 60) {
-    renderSpeed('x' + scale.toFixed(1));
-    return;
-  }
-
-  if (scale < 60 * 60) {
-    renderSpeed((scale / 60).toFixed(1) + ' min/s');
-    return;
-  }
-
-  if (scale < 60 * 60 * 24) {
-    renderSpeed((scale / 60 / 60).toFixed(1) + ' hr/s');
-    return;
-  }
-
-  renderSpeed((scale / 60 / 60 / 24).toFixed(1) + ' days/s');
 }
 
 updateSpeedDisplay();
 
 const timer = new Timer({
-  startDate: Date.now(),
-  defaultRate: getSpeed(),
   onStart: () => {
     startStopButton.textContent = '❚❚';
   },
   onStop: () => {
     startStopButton.textContent = '▶';
-  }
+  },
+  date: Date.now()
 });
 
 window.timer = timer;
@@ -219,7 +217,7 @@ dateDisplay.addEventListener('keyup', () => {
     const date = +new Date(value);
 
     if (date) {
-      timer.setValue(date);
+      timer.setDate(date);
     }
   }
 });
@@ -229,16 +227,16 @@ const dateSlider = new Range(document.getElementById('date-slider'), {
     if (isShiftDown) {
       const time = getHHMMSS(+timeSlider.value, { inUTC: true });
       const date = getYYYYMMDD(+v);
-      timer.setValue(+new Date(`${date}Z${time}`));
+      timer.setDate(+new Date(`${date}Z${time}`), { dontAnimate: true });
     } else {
-      timer.setValue(+v);
+      timer.setDate(+v);
     }
   }
 });
 
 const timeSlider = new Range(document.getElementById('time-slider'), {
   onUpdate: v => {
-    timer.setValue(+timeSlider.value);
+    timer.setDate(+timeSlider.value);
   }
 });
 
@@ -281,9 +279,6 @@ function setLocation(arr) {
 
 setLocation([31.7683, 35.2137]);
 
-timer.start();
-animate();
-
 function formatDateDisplay(t) {
   return getYYYYMMDD(t);
 }
@@ -301,22 +296,42 @@ function updateCoordsMarker({ lat, long }) {
   coordsMarker.style.transform = `translate(${cmx}%, ${cmy}%)`;
 }
 
-function animate() {
-  requestAnimationFrame(animate);
-  const t = timer.state.value;
+let frameQueued = false;
 
+const oncePerFrame = fn => {
+  return (...a) => {
+    if (frameQueued) {
+      return false;
+    }
+
+    frameQueued = true;
+
+    window.requestAnimationFrame(() => {
+      fn.apply(this, a);
+      frameQueued = false;
+    });
+  };
+};
+
+function animate() {
+  const t = timer.date;
+
+  // update UI
   setIfNotFocused(dateDisplay, t, formatDateDisplay);
   setIfNotFocused(timeDisplay, t, formatTimeDisplay);
   updateDateSlider(t);
   updateTimeSlider(t);
   updateCoordsMarker(location);
 
+  // update visualation
   const positions = getPositions(t);
 
   viz1.update({ positions, location, hide });
   viz2.update({ positions, location, hide });
   viz3.update({ positions, location, hide });
 }
+
+const throttledAnimate = oncePerFrame(animate);
 
 function getYYYYMMDD(date) {
   date = new Date(date);
@@ -348,3 +363,10 @@ function getHHMMSS(date, { inUTC: inUTC } = { inUTC: false }) {
     (ss[1] ? ss : `0${ss[0]}`)
   );
 }
+
+timer.onUpdate = animate;
+window.addEventListener('mousemove', throttledAnimate);
+window.addEventListener('mousedown', throttledAnimate);
+window.addEventListener('mouseup', throttledAnimate);
+
+timer.start();
