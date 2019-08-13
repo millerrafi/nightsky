@@ -94,7 +94,7 @@ let sizes = localStorage.getItem('split-sizes');
 if (sizes) {
   sizes = JSON.parse(sizes);
 } else {
-  sizes = { 1: [70, 30], 2: [60, 40] };
+  sizes = { 1: [50, 50], 2: [100, 0] };
 }
 
 Split(['.pane-1', '.pane-2'], {

@@ -47,11 +47,11 @@ const getFragmentShader = ({ dot }) =>
     `
     : `
       varying vec3 vColor;
-      varying vec3 vPos;
+      // varying vec3 vPos;
       varying float vAlpha;
-      varying vec3 vNormal;
-      varying vec3 cameraVector;
-      varying vec3 vCameraPos;
+      // varying vec3 vNormal;
+      // varying vec3 cameraVector;
+      // varying vec3 vCameraPos;
       varying float fDot;
       
       void main() {
