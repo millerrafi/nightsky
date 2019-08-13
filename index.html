@@ -94,7 +94,6 @@
         left: 0;
         height: 100%;
         width: 100%;
-        display: none;
       }
       .gutter {
         background-color: #444;
@@ -219,5 +218,8 @@
     <script src="vendor/OrbitControls.101.js"></script>
     <script src="vendor/split.min.js"></script>
     <script type="module" src="js/index.js"></script>
+    <script nomodule>
+      document.body.innerHTML = 'Sorry, your browser does not support this app. We recommend Google Chrome or Firefox.'
+    </script>
   </body>
 </html>
