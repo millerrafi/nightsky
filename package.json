@@ -10,7 +10,7 @@
     "start": "parcel index.html",
     "build": "parcel build index.html",
     "predeploy": "parcel build index.html",
-    "deploy": "gh-pages -d dist -b master",
+    "deploy": "gh-pages -d dist -b gh-pages",
     "test": "jest"
   },
   "author": "Rafi Miller",
