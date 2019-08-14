@@ -310,4 +310,4 @@ module.exports=function(n){return new Promise(function(e,o){var r=document.creat
 },{}],0:[function(require,module,exports) {
 var b=require("z1Am");b.register("js",require("Ijyk"));b.load([["earth-day.137d723f.jpg","uJCF"],["earth-night.d071c417.jpg","NwoG"],["moon-day.a794d9c8.jpg","3/Zv"],["moon-night.7879ce35.jpg","n7r6"],["moon.3e711068.jpg","zFiX"],["sun.34e83b2b.png","13XP"]]).then(function(){require("QvaY");});
 },{}]},{},[0], null)
-//# sourceMappingURL=/js.6c340483.js.map
+//# sourceMappingURL=/nightsky/js.6c340483.js.map

@@ -3,17 +3,17 @@ var e=require("three");e.OrbitControls=function(t,n){var o,a,i,r,s;this.object=t
 },{"three":"gBK8"}],"m87a":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=s;var e=require("../constants.js"),t=d(require("./makeConstellationLines.js")),r=d(require("./LambertTextureMaterial.js")),n=i(require("three")),a=d(require("three-orbitcontrols")),o=d(require("../images"));function i(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var r in e)if(Object.prototype.hasOwnProperty.call(e,r)){var n=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,r):{};n.get||n.set?Object.defineProperty(t,r,n):t[r]=e[r]}return t.default=e,t}function d(e){return e&&e.__esModule?e:{default:e}}function s(i){var d=document.getElementById("c".concat(i)),s=d.parentNode,l=s.getBoundingClientRect(),u=l.width,c=l.height,p=u/c,h=new n.WebGLRenderer({antialias:!0,canvas:d}),v=new n.PerspectiveCamera(15,p,.1,1e4);v.position.set(0,150,400);var w=new n.Scene;w.background=new n.Color(1118481),w.add(v),h.setSize(u,c);var M=new a.default(v,s);M.enabled=!1,d.addEventListener("mouseenter",function(){M.enabled=!0}),d.addEventListener("mouseleave",function(){M.enabled=!1});var E,T=(0,t.default)(v.position.length());T.rotation.z=-e.EARTH_TILT*e.DEG,w.add(T),require("_bundle_loader")(require.resolve("/js/three/starField.js")).then(function(t){var r=t.makeStarField;(E=r(v.position.length())).rotation.z=-e.EARTH_TILT*e.DEG,w.add(E)});var f=(new n.TextureLoader).load(o.default["sun.png"]),g=new n.SpriteMaterial({map:f,depthWrite:!1}),A=new n.Sprite(g);A.scale.set(4*e.SUN_RADIUS,4*e.SUN_RADIUS,1),w.add(A);var S=new n.Mesh(new n.SphereGeometry(e.EARTH_RADIUS,30,30),(0,r.default)(o.default["earth-day.jpg"],o.default["earth-night.jpg"],{invert:!0}));w.add(S);var b=new n.Mesh(new n.CylinderGeometry(.1,.1,20,8),new n.MeshBasicMaterial({color:16777215}));w.add(b);var D=new n.Group;D.add(S),D.add(b),D.rotateOnWorldAxis(new n.Vector3(0,0,1),-e.EARTH_TILT*e.DEG);var I=new n.Mesh(new n.SphereGeometry(e.MOON_RADIUS,30,30),(0,r.default)(o.default["moon-day.jpg"],o.default["moon-night.jpg"],{invert:!0})),O=new n.Mesh(new n.TorusGeometry(e.MOON_DISTANCE,.1,16,100),new n.MeshBasicMaterial({color:e.PALETTE.MOON}));O.rotation.x=Math.PI/2;var _=new n.Group;_.add(I),_.add(O),_.rotateOnWorldAxis(new n.Vector3(1,0,1).normalize(),5.1*e.DEG);var m=new n.Group;m.add(D),m.add(_),w.add(m);var j=new n.Mesh(new n.TorusGeometry(e.EARTH_DISTANCE,.1,16,100),new n.MeshBasicMaterial({color:e.PALETTE.ECLIPTIC,side:n.DoubleSide}));j.rotation.x=Math.PI/2,w.add(j);var y=new n.DirectionalLight(16777215,1),G=new n.Object3D;G.position.set(0,0,0),w.add(G),y.target=m,y.position.set(0,0,0),w.add(y);var P=new n.GridHelper(100,10,6710886,3355443);return P.position.set(0,-e.SUN_RADIUS,0),w.add(P),{update:function(t){var r=t.positions,n=t.hide,a=r.Sun.longitude*e.DEG+Math.PI,o=r.Moon.longitude*e.DEG;P.visible=!n.grid,T.visible=!n.constellations,O.visible=!n.orbits,j.visible=!n.orbits,E&&(E.visible=!n.stars),m.position.x=e.EARTH_DISTANCE*Math.sin(a),m.position.z=e.EARTH_DISTANCE*Math.cos(a),S.rotation.y=r.Earth.rotationAngle*e.DEG+1.5*Math.PI,I.position.x=e.MOON_DISTANCE*Math.sin(o),I.position.z=e.MOON_DISTANCE*Math.cos(o),I.lookAt(m.position),I.rotateY(-Math.PI/2),h.render(w,v),M.update()},onResize:function(){var e=s.getBoundingClientRect(),t=e.width,r=e.height;v.aspect=t/r,v.updateProjectionMatrix(),h.setSize(t,r)}}}
 },{"../constants.js":"MuPq","./makeConstellationLines.js":"ISnw","./LambertTextureMaterial.js":"rXcI","three":"gBK8","three-orbitcontrols":"UskU","../images":"Vn01","_bundle_loader":"z1Am","/js/three/starField.js":[["starField.07a7fabd.js","ZVbk"],"starField.07a7fabd.js.map","ZVbk"]}],"uJCF":[function(require,module,exports) {
-module.exports="/earth-day.137d723f.jpg";
+module.exports="/nightsky/earth-day.137d723f.jpg";
 },{}],"NwoG":[function(require,module,exports) {
-module.exports="/earth-night.d071c417.jpg";
+module.exports="/nightsky/earth-night.d071c417.jpg";
 },{}],"3/Zv":[function(require,module,exports) {
-module.exports="/moon-day.a794d9c8.jpg";
+module.exports="/nightsky/moon-day.a794d9c8.jpg";
 },{}],"n7r6":[function(require,module,exports) {
-module.exports="/moon-night.7879ce35.jpg";
+module.exports="/nightsky/moon-night.7879ce35.jpg";
 },{}],"zFiX":[function(require,module,exports) {
-module.exports="/moon.3e711068.jpg";
+module.exports="/nightsky/moon.3e711068.jpg";
 },{}],"13XP":[function(require,module,exports) {
-module.exports="/sun.34e83b2b.png";
+module.exports="/nightsky/sun.34e83b2b.png";
 },{}],"Bh1I":[function(require,module,exports) {
 var t=null;function e(){return t||(t=n()),t}function n(){try{throw new Error}catch(e){var t=(""+e.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);if(t)return r(t[0])}return"/"}function r(t){return(""+t).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^\/]+$/,"$1")+"/"}exports.getBundleURL=e,exports.getBaseURL=r;
 },{}],"z1Am":[function(require,module,exports) {
@@ -23,4 +23,4 @@ module.exports=function(n){return new Promise(function(e,o){var r=document.creat
 },{}],0:[function(require,module,exports) {
 var b=require("z1Am");b.register("js",require("Ijyk"));b.load([]).then(function(){require("m87a");});
 },{}]},{},[0], null)
-//# sourceMappingURL=/Viz1.a8998b5e.js.map
+//# sourceMappingURL=/nightsky/Viz1.a8998b5e.js.map

@@ -11,4 +11,4 @@ module.exports=function(n){return new Promise(function(e,o){var r=document.creat
 },{}],0:[function(require,module,exports) {
 var b=require("z1Am");b.register("js",require("Ijyk"));b.load([]).then(function(){require("UlYt");});
 },{}]},{},[0], null)
-//# sourceMappingURL=/Viz2.1a8d640b.js.map
+//# sourceMappingURL=/nightsky/Viz2.1a8d640b.js.map
