@@ -9,7 +9,7 @@
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build index.html",
-    "predeploy": "parcel build index.html",
+    "predeploy": "parcel build index.html --public-url /nightsky/",
     "deploy": "gh-pages -d dist -b gh-pages",
     "test": "jest"
   },
