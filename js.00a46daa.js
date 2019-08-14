@@ -2459,13 +2459,13 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var images = {};
-var path = window.location.href.split('index.html')[0].split(/\/$/)[0];
+var images = {}; // const path = window.location.href.split('index.html')[0].split(/\/$/)[0];
+
 (0, _keys.default)(jpg).forEach(function (k) {
-  images[k + '.jpg'] = path + jpg[k];
+  images[k + '.jpg'] = jpg[k];
 });
 (0, _keys.default)(png).forEach(function (k) {
-  images[k + '.png'] = path + png[k];
+  images[k + '.png'] = png[k];
 });
 var _default = images;
 exports.default = _default;
