@@ -1,4 +1,15 @@
-import { stars } from '../astro/stars14.js';
+import fs from 'fs';
+import * as THREE from 'three';
+
+const starsCSV = fs.readFileSync('./js/astro/stars14.csv', 'utf8');
+
+const stars = starsCSV
+  .trim()
+  .split('\n')
+  // remove header
+  .slice(1)
+  .map(line => line.split(','));
+
 const vertexShader = `
   attribute float alpha;
   varying float vAlpha;
@@ -201,3 +212,5 @@ function bv_to_rgb(bv) {
 
   return [R, G, B];
 }
+
+export { makeStarField };

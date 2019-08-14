@@ -1,6 +1,7 @@
 // https://observablehq.com/@mbostock/geojson-in-three-js
 import wireframe from './wireframe.js';
 import { PALETTE } from '../constants.js';
+import * as THREE from 'three';
 
 export default function graticule(radius) {
   const mesh = {

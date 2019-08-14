@@ -1,4 +1,3 @@
-import { path } from '../path.js';
 import {
   DEG,
   EARTH_DISTANCE,
@@ -8,11 +7,13 @@ import {
   PALETTE,
   SUN_RADIUS
 } from '../constants.js';
+import * as THREE from 'three';
 import makeGraticule from '../d3/graticule.js';
 import makeConstellationLines from './makeConstellationLines.js';
-import makeStarField from './starField.js';
-import wireframe from '../d3/wireframe.js';
+// import makeStarField from '/js/three/starField.js';
 import LambertTextureMaterial from './LambertTextureMaterial.js';
+
+import images from '../images';
 
 export default function Viz(index) {
   const canvas = document.getElementById(`c${index}`);
@@ -56,8 +57,8 @@ export default function Viz(index) {
 
   var sun = new THREE.Sprite(
     new THREE.SpriteMaterial({
-      map: new THREE.TextureLoader().load(path + '/img/sun.png'),
-      blending: THREE.AdditiveBlending
+      map: new THREE.TextureLoader().load(images['sun.png']),
+      depthWrite: false
     })
   );
   sun.scale.set(SUN_RADIUS * 2, SUN_RADIUS * 2, 1);
@@ -65,10 +66,7 @@ export default function Viz(index) {
 
   var earth = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS, 30, 30),
-    LambertTextureMaterial(
-      path + '/img/earth-day.jpg',
-      path + '/img/earth-night.jpg'
-    )
+    LambertTextureMaterial(images['earth-day.jpg'], images['earth-night.jpg'])
   );
   scene.add(earth);
 
@@ -89,10 +87,7 @@ export default function Viz(index) {
 
   var moon = new THREE.Mesh(
     new THREE.SphereGeometry(MOON_RADIUS * 2, 30, 30),
-    LambertTextureMaterial(
-      path + '/img/moon-day.jpg',
-      path + '/img/moon-night.jpg'
-    )
+    LambertTextureMaterial(images['moon-day.jpg'], images['moon-night.jpg'])
   );
 
   var moonOrbit = new THREE.Mesh(
@@ -147,16 +142,18 @@ export default function Viz(index) {
   equator.rotation.x = Math.PI / 2;
   scene.add(equator);
 
-  scene.add(
-    makeStarField(EARTH_DISTANCE, {
-      maxSize: 1,
-      dot: true,
-      // additive: true,
-      scalePoint: mag => 3 * Math.exp(-0.2 * mag),
-      fadePoint: mag => Math.exp(-8 * (mag - 2))
-      // scalePoint: mag => 2
-    })
-  );
+  import('/js/three/starField.js').then(({ makeStarField }) => {
+    scene.add(
+      makeStarField(EARTH_DISTANCE, {
+        maxSize: 1,
+        dot: true,
+        // additive: true,
+        scalePoint: mag => 3 * Math.exp(-0.2 * mag),
+        fadePoint: mag => Math.exp(-8 * (mag - 2))
+        // scalePoint: mag => 2
+      })
+    );
+  });
 
   return {
     update({ positions, hide }) {

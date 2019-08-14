@@ -1,7 +1,5 @@
-import { path } from '../path.js';
 import {
   DEG,
-  DAYS,
   EARTH_DISTANCE,
   EARTH_RADIUS,
   EARTH_TILT,
@@ -11,9 +9,14 @@ import {
   PALETTE
 } from '../constants.js';
 import makeConstellationLines from './makeConstellationLines.js';
-import makeStarField from './starField.js';
+// import makeStarField from '/js/three/starField.js';
 
 import LambertTextureMaterial from './LambertTextureMaterial.js';
+
+import * as THREE from 'three';
+import OrbitControls from 'three-orbitcontrols';
+
+import images from '../images';
 
 export default function Viz(index) {
   const c1 = document.getElementById(`c${index}`);
@@ -54,7 +57,7 @@ export default function Viz(index) {
   // Attach the renderer-supplied
   // DOM element.
 
-  var controls1 = new THREE.OrbitControls(camera1, container1);
+  var controls1 = new OrbitControls(camera1, container1);
   controls1.enabled = false;
 
   c1.addEventListener('mouseenter', () => {
@@ -68,25 +71,28 @@ export default function Viz(index) {
   constellations.rotation.z = -EARTH_TILT * DEG;
   scene.add(constellations);
 
-  const starField = makeStarField(camera1.position.length());
-  starField.rotation.z = -EARTH_TILT * DEG;
-  scene.add(starField);
+  let starField;
 
-  var sunMap = new THREE.TextureLoader().load(path + '/img/sun.png');
-  var sunMaterial = new THREE.SpriteMaterial({ map: sunMap });
+  import('/js/three/starField.js').then(({ makeStarField }) => {
+    starField = makeStarField(camera1.position.length());
+    starField.rotation.z = -EARTH_TILT * DEG;
+    scene.add(starField);
+  });
+
+  var sunMap = new THREE.TextureLoader().load(images['sun.png']);
+  var sunMaterial = new THREE.SpriteMaterial({
+    map: sunMap,
+    depthWrite: false
+  });
   var sun = new THREE.Sprite(sunMaterial);
   sun.scale.set(SUN_RADIUS * 4, SUN_RADIUS * 4, 1);
   scene.add(sun);
 
   var earth = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS, 30, 30),
-    LambertTextureMaterial(
-      path + '/img/earth-day.jpg',
-      path + '/img/earth-night.jpg',
-      {
-        invert: true
-      }
-    )
+    LambertTextureMaterial(images['earth-day.jpg'], images['earth-night.jpg'], {
+      invert: true
+    })
   );
   scene.add(earth);
 
@@ -103,13 +109,9 @@ export default function Viz(index) {
 
   var moon = new THREE.Mesh(
     new THREE.SphereGeometry(MOON_RADIUS, 30, 30),
-    LambertTextureMaterial(
-      path + '/img/moon-day.jpg',
-      path + '/img/moon-night.jpg',
-      {
-        invert: true
-      }
-    )
+    LambertTextureMaterial(images['moon-day.jpg'], images['moon-night.jpg'], {
+      invert: true
+    })
   );
 
   var moonOrbit = new THREE.Mesh(
@@ -173,7 +175,7 @@ export default function Viz(index) {
       constellations.visible = !hide.constellations;
       moonOrbit.visible = !hide.orbits;
       earthOrbit.visible = !hide.orbits;
-      starField.visible = !hide.stars;
+      if (starField) starField.visible = !hide.stars;
 
       groupEarthMoon.position.x = EARTH_DISTANCE * Math.sin(sunLong);
       groupEarthMoon.position.z = EARTH_DISTANCE * Math.cos(sunLong);

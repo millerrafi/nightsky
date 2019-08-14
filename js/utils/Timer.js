@@ -1,7 +1,9 @@
 // import '../../vendor/TweenLite.min.js';
 // import '../../vendor/TimelineLite.min.js';
-import { TweenLite, Linear } from '../../vendor/TweenLite.js';
-import { TimelineLite } from '../../vendor/TimelineLite.js';
+
+// import { TweenLite, Linear } from '../../vendor/TweenLite.js';
+// import { TimelineLite } from '../../vendor/TimelineLite.js';
+import { TweenLite, Linear, TimelineLite } from 'gsap';
 
 // const { TweenLite, Linear, TimelineLite } = window;
 

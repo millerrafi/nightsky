@@ -1,4 +1,6 @@
-export default function LambertTextureMaterial(day, night, options={}) {
+import * as THREE from 'three';
+
+export default function LambertTextureMaterial(day, night, options = {}) {
   const invert = options.invert ? -1 : 1;
 
   var uniforms = {

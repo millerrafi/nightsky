@@ -1,4 +1,3 @@
-import { path } from '../path.js';
 import {
   DEG,
   EARTH_DISTANCE,
@@ -7,11 +6,14 @@ import {
   SUN_RADIUS,
   PALETTE
 } from '../constants.js';
+import * as THREE from 'three';
 import makeGraticule from '../d3/graticule.js';
 import makeHorizon from '../d3/horizon.js';
 import makeConstellationLines from './makeConstellationLines.js';
-import makeStarField from './starField.js';
+// import makeStarField from '/js/three/starField.js';
 import LambertTextureMaterial from './LambertTextureMaterial.js';
+
+import images from '../images';
 
 export default function Viz(index) {
   const canvas = document.getElementById(`c${index}`);
@@ -81,8 +83,11 @@ export default function Viz(index) {
   underground.renderOrder = 1;
   scene.add(underground);
 
-  var sunMap = new THREE.TextureLoader().load(path + '/img/sun.png');
-  var sunMaterial = new THREE.SpriteMaterial({ map: sunMap });
+  var sunMap = new THREE.TextureLoader().load(images['sun.png']);
+  var sunMaterial = new THREE.SpriteMaterial({
+    map: sunMap,
+    depthWrite: false
+  });
   var sun = new THREE.Sprite(sunMaterial);
   sun.scale.set(SUN_RADIUS * 2, SUN_RADIUS * 2, 1);
   celestialSphere.add(sun);
@@ -100,10 +105,7 @@ export default function Viz(index) {
 
   var moon = new THREE.Mesh(
     new THREE.SphereGeometry(MOON_RADIUS * 2, 30, 30),
-    LambertTextureMaterial(
-      path + '/img/moon-day.jpg',
-      path + '/img/moon-night.jpg'
-    )
+    LambertTextureMaterial(images['moon-day.jpg'], images['moon-night.jpg'])
   );
 
   var moonOrbit = new THREE.Mesh(
@@ -191,13 +193,15 @@ export default function Viz(index) {
 
   scene.add(observer);
 
-  const starField = makeStarField(EARTH_DISTANCE, {
-    maxSize: 1,
-    dot: true,
-    additive: true,
-    scalePoint: mag => 3 * Math.exp(-0.2 * mag)
+  import('/js/three/starField.js').then(({ makeStarField }) => {
+    const starField = makeStarField(EARTH_DISTANCE, {
+      maxSize: 1,
+      dot: true,
+      additive: true,
+      scalePoint: mag => 3 * Math.exp(-0.2 * mag)
+    });
+    celestialSphere.add(starField);
   });
-  celestialSphere.add(starField);
 
   // celestialSphere.add(makeStarField(EARTH_DISTANCE));
 
