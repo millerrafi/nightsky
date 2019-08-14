@@ -14,6 +14,7 @@ import makeConstellationLines from './makeConstellationLines.js';
 import LambertTextureMaterial from './LambertTextureMaterial.js';
 
 import images from '../images';
+import makeRing from './makeRing.js';
 
 export default function Viz(index) {
   const canvas = document.getElementById(`c${index}`);
@@ -76,28 +77,21 @@ export default function Viz(index) {
   );
   scene.add(northPole);
 
-  var eclipticPlane = new THREE.Mesh(
-    new THREE.TorusGeometry(EARTH_DISTANCE, 0.1, 16, 100),
-    new THREE.MeshBasicMaterial({
-      color: PALETTE.ECLIPTIC,
-      side: THREE.DoubleSide
-    })
-  );
-  eclipticPlane.rotation.x = Math.PI / 2;
+  var eclipticPlane = makeRing({
+    distance: EARTH_DISTANCE,
+    width: 1 * DEG,
+    color: PALETTE.ECLIPTIC
+  });
 
   var moon = new THREE.Mesh(
     new THREE.SphereGeometry(MOON_RADIUS * 2, 30, 30),
     LambertTextureMaterial(images['moon-day.jpg'], images['moon-night.jpg'])
   );
 
-  var moonOrbit = new THREE.Mesh(
-    new THREE.TorusGeometry(EARTH_DISTANCE, 0.1, 16, 100),
-    new THREE.MeshBasicMaterial({
-      color: PALETTE.MOON,
-      side: THREE.DoubleSide
-    })
-  );
-  moonOrbit.rotation.x = Math.PI / 2;
+  var moonOrbit = makeRing({
+    distance: EARTH_DISTANCE,
+    color: PALETTE.MOON
+  });
 
   const moonTilt = new THREE.Object3D();
   moonTilt.add(moon);
@@ -105,7 +99,7 @@ export default function Viz(index) {
 
   moonTilt.rotateOnWorldAxis(new THREE.Vector3(1, 0, 1).normalize(), 5.1 * DEG);
 
-  eclipticPlane.rotation.x = Math.PI / 2;
+  // eclipticPlane.rotation.x = Math.PI / 2;
 
   const ecliptic = new THREE.Object3D();
   ecliptic.add(sun);
@@ -131,15 +125,12 @@ export default function Viz(index) {
   const constellations = makeConstellationLines(EARTH_DISTANCE);
   scene.add(constellations);
 
-  var equator = new THREE.Mesh(
-    new THREE.TorusGeometry(EARTH_DISTANCE, 0.4, 16, 100),
-    new THREE.MeshBasicMaterial({
-      color: PALETTE.EQUATOR,
-      side: THREE.DoubleSide
-    })
-  );
+  var equator = makeRing({
+    distance: EARTH_DISTANCE,
+    width: 2 * DEG,
+    color: PALETTE.EQUATOR
+  });
 
-  equator.rotation.x = Math.PI / 2;
   scene.add(equator);
 
   import('/js/three/starField.js').then(({ makeStarField }) => {
