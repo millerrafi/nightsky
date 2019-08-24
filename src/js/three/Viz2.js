@@ -12,9 +12,21 @@ import makeGraticule from '../d3/graticule.js';
 import makeConstellationLines from './makeConstellationLines.js';
 // import makeStarField from '/js/three/starField.js';
 import WorldMaterial from './WorldMaterial.js';
+import fs from 'fs';
 
 import images from '../images';
 import makeRing from './makeRing.js';
+import { Buffer } from 'buffer';
+
+const nightFallbackBuffer = fs.readFileSync('./img/earth-night.jpg');
+const nightFallback = new Image();
+nightFallback.src =
+  'data:image/jpeg;base64,' + nightFallbackBuffer.toString('base64');
+
+const dayFallbackBuffer = fs.readFileSync('./img/earth-day.jpg');
+const dayFallback = new Image();
+dayFallback.src =
+  'data:image/jpeg;base64,' + dayFallbackBuffer.toString('base64');
 
 export default function Viz(index) {
   const canvas = document.getElementById(`c${index}`);
@@ -67,7 +79,10 @@ export default function Viz(index) {
 
   var earth = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS, 30, 30),
-    WorldMaterial(images['earth-day.jpg'], images['earth-night.jpg'])
+    WorldMaterial(images['earth-day.jpg'], images['earth-night.jpg'], {
+      nightFallback,
+      dayFallback
+    })
   );
   scene.add(earth);
 

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import * as THREE from 'three';
 
-const starsCSV = fs.readFileSync('./js/astro/stars14.csv', 'utf8');
+const starsCSV = fs.readFileSync('./src/js/astro/stars14.csv', 'utf8');
 
 const stars = starsCSV
   .trim()
@@ -10,8 +10,8 @@ const stars = starsCSV
   .slice(1)
   .map(line => line.split(','));
 
-const vertexShader = fs.readFileSync('./js/three/starField.vert', 'utf8');
-const fragmentShader = fs.readFileSync('./js/three/starField.frag', 'utf8');
+const vertexShader = fs.readFileSync('./src/js/three/starField.vert', 'utf8');
+const fragmentShader = fs.readFileSync('./src/js/three/starField.frag', 'utf8');
 
 const clamp = (x, a, b) => Math.max(a, Math.min(x, b));
 

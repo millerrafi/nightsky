@@ -1,4 +1,4 @@
-import { getPositions } from '../js/astronomy.js';
+import { getPositions } from '../src/js/astronomy.js';
 import './toBeCyclicallyCloseTo.js';
 
 /**
