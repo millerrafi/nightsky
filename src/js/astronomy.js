@@ -322,10 +322,7 @@ export const getPositions = (date, { bodies = defaultBodies } = {}) => {
   }
 
   if (bodies.includes('planets')) {
-    positions = {
-      ...positions,
-      ...getPlanetPositions(date)
-    };
+    Object.assign(positions, getPlanetPositions(date));
   }
 
   return positions;
@@ -401,15 +398,6 @@ function getPlanetPositions(date) {
       latitude: beta,
       distance: delta
     };
-
-    console.log({
-      lambda,
-      beta,
-      delta,
-      L_0,
-      B_0,
-      R_0
-    });
   });
 
   return positions;
