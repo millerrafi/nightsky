@@ -1,3 +1,5 @@
+import VSOP87 from './astro/VSOP87.json';
+
 const MOON_LONGITUDE_TABLE = `
   D  M M1  F    sum_l     sum_r
 ---------------------------------
@@ -154,7 +156,7 @@ const cos = deg => {
 
 const DEG = Math.PI / 180;
 
-const defaultBodies = ['Sun', 'Earth', 'Moon'];
+const defaultBodies = ['Sun', 'Earth', 'Moon', 'planets'];
 
 /**
  * Returns an object of astronomical data for a given date. Angles are returned in degrees, distances in kilometers.
@@ -162,6 +164,8 @@ const defaultBodies = ['Sun', 'Earth', 'Moon'];
  * Algorithms are based on Jean Meeus, Astronomical Algorithms. 2nd ed., Willmann-Bell, 1998.
  * 
  * The target accuracy of all positions is 0.1° in the years 1900 to 2100. Calculations use the J2000.0 epoch and ignore small effects such as the precession and nutation of the ecliptic.
+ * 
+ * The positions of the planets use VSOP87, which has been truncated where convenient while staying within the target accuracy.
 
  *
  * @param {Date|number} date
@@ -230,7 +234,7 @@ export const getPositions = (date, { bodies = defaultBodies } = {}) => {
       (T * T * T * T) / 863310000
   );
 
-  const positions = { JD, T, L1, D, M, M1, F };
+  let positions = { JD, T, L1, D, M, M1, F };
 
   if (bodies.includes('earth')) {
     positions.Earth = {
@@ -317,7 +321,98 @@ export const getPositions = (date, { bodies = defaultBodies } = {}) => {
     };
   }
 
+  if (bodies.includes('planets')) {
+    positions = {
+      ...positions,
+      ...getPlanetPositions(date)
+    };
+  }
+
   return positions;
 };
 
-getPositions({ date: new Date('1992/04/12Z00:00'), bodies: ['moon'] });
+function getPlanetPositions(date) {
+  const JD = +date / 86400000 + 2440587.5;
+  const tau = (JD - 2451545) / 365250;
+
+  const tau_ = [
+    1,
+    tau,
+    tau * tau,
+    tau * tau * tau,
+    tau * tau * tau * tau,
+    tau * tau * tau * tau * tau
+  ];
+
+  const positions = {};
+
+  const getHelio = planet => {
+    const helio = { L: 0, B: 0, R: 0 };
+
+    ['L', 'B', 'R'].forEach(LBR => {
+      for (let i = 0; i <= 5; i++) {
+        const table = VSOP87[planet][LBR + i];
+
+        if (table) {
+          let j = table.length;
+
+          while (j--) {
+            const [a, b, c] = table[j];
+            helio[LBR] += a * Math.cos(b + c * tau) * tau_[i];
+          }
+        }
+      }
+    });
+
+    return helio;
+  };
+
+  const { L: L_0, B: B_0, R: R_0 } = getHelio('Earth');
+
+  ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'].forEach(planet => {
+    // heliocentric ecliptic
+
+    let { L, B, R } = getHelio(planet);
+
+    // geocentric rectangular
+    let x = R * Math.cos(B) * Math.cos(L) - R_0 * Math.cos(B_0) * Math.cos(L_0);
+    let y = R * Math.cos(B) * Math.sin(L) - R_0 * Math.cos(B_0) * Math.sin(L_0);
+    let z = R * Math.sin(B) - R_0 * Math.sin(B_0);
+
+    // geocentric ecliptic
+    let lambda = reduceAngle(Math.atan2(y, x) / DEG);
+    let beta = Math.atan2(z, Math.sqrt(x * x + y * y)) / DEG;
+    let delta = Math.sqrt(x * x + y * y + z * z);
+
+    L = reduceAngle(L / DEG);
+    B = B / DEG;
+
+    positions[planet] = {
+      L,
+      B,
+      R,
+      x,
+      y,
+      z,
+      lambda,
+      beta,
+      delta,
+      longitude: lambda,
+      latitude: beta,
+      distance: delta
+    };
+
+    console.log({
+      lambda,
+      beta,
+      delta,
+      L_0,
+      B_0,
+      R_0
+    });
+  });
+
+  return positions;
+}
+
+// getPositions({ date: new Date('1992/04/12Z00:00'), bodies: ['moon'] });
