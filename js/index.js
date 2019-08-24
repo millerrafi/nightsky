@@ -1,12 +1,23 @@
 const init = async () => {
-  const { default: Viz1 } = await import('/js/three/Viz1.js');
-  const { default: Viz2 } = await import('/js/three/Viz2.js');
-  const { default: Viz3 } = await import('/js/three/Viz3.js');
-  const { default: Timer } = await import('/js/utils/Timer.js');
-  const { default: Range } = await import('/js/utils/Range.js');
-  const { default: Split } = await import('split.js');
   const { default: images } = await import('/js/images');
-  const { getPositions } = await import('/js/astronomy.js');
+
+  const [
+    { default: Viz1 },
+    { default: Viz2 },
+    { default: Viz3 },
+    { default: Timer },
+    { default: Range },
+    { default: Split },
+    { getPositions }
+  ] = await Promise.all([
+    import('/js/three/Viz1.js'),
+    import('/js/three/Viz2.js'),
+    import('/js/three/Viz3.js'),
+    import('/js/utils/Timer.js'),
+    import('/js/utils/Range.js'),
+    import('split.js'),
+    import('/js/astronomy.js')
+  ]);
 
   const speedDisplay = document.getElementById('speed-display');
   const dateDisplay = document.getElementById('date-display');
