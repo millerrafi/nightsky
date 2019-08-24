@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import makeGraticule from '../d3/graticule.js';
 import makeConstellationLines from './makeConstellationLines.js';
 // import makeStarField from '/js/three/starField.js';
-import LambertTextureMaterial from './LambertTextureMaterial.js';
+import WorldMaterial from './WorldMaterial.js';
 
 import images from '../images';
 import makeRing from './makeRing.js';
@@ -67,7 +67,7 @@ export default function Viz(index) {
 
   var earth = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_RADIUS, 30, 30),
-    LambertTextureMaterial(images['earth-day.jpg'], images['earth-night.jpg'])
+    WorldMaterial(images['earth-day.jpg'], images['earth-night.jpg'])
   );
   scene.add(earth);
 
@@ -85,7 +85,7 @@ export default function Viz(index) {
 
   var moon = new THREE.Mesh(
     new THREE.SphereGeometry(MOON_RADIUS * 2, 30, 30),
-    LambertTextureMaterial(images['moon-day.jpg'], images['moon-night.jpg'])
+    WorldMaterial(images['moon-day.jpg'], images['moon-night.jpg'])
   );
 
   var moonOrbit = makeRing({

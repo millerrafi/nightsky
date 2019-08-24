@@ -6,69 +6,12 @@ const starsCSV = fs.readFileSync('./js/astro/stars14.csv', 'utf8');
 const stars = starsCSV
   .trim()
   .split('\n')
-  // remove header
+  // remove CSV header
   .slice(1)
   .map(line => line.split(','));
 
-const vertexShader = `
-  attribute float alpha;
-  varying float vAlpha;
-  attribute float size;
-  varying float vSize;
-  attribute vec3 vertexnormal;
-  varying vec3 vNormal;
-  varying vec3 vColor;
-  varying vec3 vPos;
-  varying vec3 cameraVector;
-  varying vec3 vCameraPos;  
-  varying float fDot;
-  // uniform vec3 Z = vec3( 0.0, 0.0, 1.0 );
-
-  void main() {
-    vColor = color;
-    vAlpha = alpha;
-    vSize = size;
-    vNormal = vertexnormal;
-    vCameraPos = cameraPosition;
-    cameraVector = cameraPosition - vPos;
-    vPos = (modelViewMatrix * vec4(position, 1.0)).xyz;
-    vNormal = normalize(modelViewMatrix * vec4(vertexnormal, 0.0)).xyz;
-    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-    fDot = dot(vNormal, vec3( 0.0, 0.0, 1.0 ));
-    // gl_PointSize = 2.0;
-    gl_PointSize = vSize;
-    // gl_Position = projectionMatrix * mvPosition;
-
-    
-    if ( fDot > 0.0 )
-      gl_Position = vec4(2.0, 0.0, 0.0, 1.0);
-    else
-      gl_Position = projectionMatrix * mvPosition;
-  }
-`;
-
-const getFragmentShader = ({ dot }) =>
-  !dot
-    ? `
-      varying vec3 vColor;
-      varying float vAlpha;
-      void main() {
-        gl_FragColor = vec4( vColor, vAlpha );
-      }
-    `
-    : `
-      varying vec3 vColor;
-      // varying vec3 vPos;
-      varying float vAlpha;
-      // varying vec3 vNormal;
-      // varying vec3 cameraVector;
-      // varying vec3 vCameraPos;
-      varying float fDot;
-      
-      void main() {
-        gl_FragColor = vec4( vColor, 0.1 + 0.9 * vAlpha * - clamp(fDot, -1.0, 0.0) );
-      }
-    `;
+const vertexShader = fs.readFileSync('./js/three/starField.vert', 'utf8');
+const fragmentShader = fs.readFileSync('./js/three/starField.frag', 'utf8');
 
 const clamp = (x, a, b) => Math.max(a, Math.min(x, b));
 
@@ -76,16 +19,10 @@ export default function makeStarField(radius, options = {}) {
   const minSize = options.minSize || 0.5;
   const scalePoint = options.scalePoint || (mag => 5 * Math.exp(-0.2 * mag));
   const fadePoint = options.scalePoint || (mag => Math.exp(-0.2 * (mag - 4)));
-  const dot = options.dot || false;
 
   const shaderMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-      dot
-    },
     vertexShader,
-    fragmentShader: getFragmentShader({ dot }),
-    // blending: options.additive ? THREE.AdditiveBlending : THREE.NormalBlending,
-    // depthTest: false,
+    fragmentShader,
     transparent: true,
     vertexColors: true
   });

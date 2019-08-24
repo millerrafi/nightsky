@@ -11,7 +11,7 @@ import makeGraticule from '../d3/graticule.js';
 import makeHorizon from '../d3/horizon.js';
 import makeConstellationLines from './makeConstellationLines.js';
 // import makeStarField from '/js/three/starField.js';
-import LambertTextureMaterial from './LambertTextureMaterial.js';
+import WorldMaterial from './WorldMaterial.js';
 
 import images from '../images';
 
@@ -105,7 +105,7 @@ export default function Viz(index) {
 
   var moon = new THREE.Mesh(
     new THREE.SphereGeometry(MOON_RADIUS * 2, 30, 30),
-    LambertTextureMaterial(images['moon-day.jpg'], images['moon-night.jpg'])
+    WorldMaterial(images['moon-day.jpg'], images['moon-night.jpg'])
   );
 
   var moonOrbit = new THREE.Mesh(

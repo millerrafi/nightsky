@@ -1,4 +1,7 @@
 node_modules
 coverage
-.cache
 dist
+build
+deploy
+.cache
+.reports
