@@ -17,6 +17,7 @@ import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
 
 import images from '../images';
+import makeStarField, { getStars11 } from './starField.js';
 
 export default function Viz(index) {
   const c1 = document.getElementById(`c${index}`);
@@ -73,8 +74,12 @@ export default function Viz(index) {
 
   let starField;
 
-  import('/js/three/starField.js').then(({ makeStarField }) => {
-    starField = makeStarField(camera1.position.length());
+  starField = makeStarField(camera1.position.length());
+  starField.rotation.z = -EARTH_TILT * DEG;
+  scene.add(starField);
+
+  getStars11().then(stars11 => {
+    starField = makeStarField(camera1.position.length(), { stars: stars11 });
     starField.rotation.z = -EARTH_TILT * DEG;
     scene.add(starField);
   });

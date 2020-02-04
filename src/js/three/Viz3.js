@@ -12,6 +12,7 @@ import makeHorizon from '../d3/horizon.js';
 import makeConstellationLines from './makeConstellationLines.js';
 // import makeStarField from '/js/three/starField.js';
 import WorldMaterial from './WorldMaterial.js';
+import makeStarField, { getStars11 } from './starField.js';
 
 import images from '../images';
 
@@ -193,17 +194,23 @@ export default function Viz(index) {
 
   scene.add(observer);
 
-  import('/js/three/starField.js').then(({ makeStarField }) => {
-    const starField = makeStarField(EARTH_DISTANCE, {
-      maxSize: 1,
-      dot: true,
-      additive: true,
-      scalePoint: mag => 3 * Math.exp(-0.2 * mag)
+  const starFieldOptions = {
+    maxSize: 1,
+    dot: true,
+    additive: true,
+    scalePoint: mag => 3 * Math.exp(-0.2 * mag)
+  };
+
+  let starField = makeStarField(EARTH_DISTANCE, starFieldOptions);
+  celestialSphere.add(starField);
+
+  getStars11().then(stars11 => {
+    starField = makeStarField(EARTH_DISTANCE, {
+      ...starFieldOptions,
+      stars: stars11
     });
     celestialSphere.add(starField);
   });
-
-  // celestialSphere.add(makeStarField(EARTH_DISTANCE));
 
   return {
     update({ positions, hide, location }) {

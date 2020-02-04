@@ -1,3 +1,6 @@
+// preload
+import('/js/astro/stars11.js')
+
 const init = async () => {
   const { default: images } = await import('/js/images');
 

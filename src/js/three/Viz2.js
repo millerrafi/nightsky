@@ -17,6 +17,7 @@ import fs from 'fs';
 import images from '../images';
 import makeRing from './makeRing.js';
 import { Buffer } from 'buffer';
+import makeStarField, { getStars11 } from './starField.js';
 
 const nightFallbackBuffer = fs.readFileSync('./img/earth-night.jpg');
 const nightFallback = new Image();
@@ -148,17 +149,24 @@ export default function Viz(index) {
 
   scene.add(equator);
 
-  import('/js/three/starField.js').then(({ makeStarField }) => {
-    scene.add(
-      makeStarField(EARTH_DISTANCE, {
-        maxSize: 1,
-        dot: true,
-        // additive: true,
-        scalePoint: mag => 3 * Math.exp(-0.2 * mag),
-        fadePoint: mag => Math.exp(-8 * (mag - 2))
-        // scalePoint: mag => 2
-      })
-    );
+  const starFieldOptions = {
+    maxSize: 1,
+    dot: true,
+    // additive: true,
+    scalePoint: mag => 3 * Math.exp(-0.2 * mag),
+    fadePoint: mag => Math.exp(-8 * (mag - 2))
+    // scalePoint: mag => 2
+  };
+
+  let starField = makeStarField(EARTH_DISTANCE, starFieldOptions);
+  scene.add(starField);
+
+  getStars11().then(stars11 => {
+    starField = makeStarField(EARTH_DISTANCE, {
+      ...starFieldOptions,
+      stars: stars11
+    });
+    scene.add(starField);
   });
 
   return {

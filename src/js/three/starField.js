@@ -1,12 +1,12 @@
 import fs from 'fs';
 import * as THREE from 'three';
 
-const starsCSV = fs.readFileSync('./src/js/astro/stars14.csv', 'utf8');
+const stars4_csv = fs.readFileSync('./src/js/astro/stars4.csv', 'utf8');
 
-const stars = starsCSV
+// parse simple CSV, slice(1) to remove header row
+const stars4 = stars4_csv
   .trim()
   .split('\n')
-  // remove CSV header
   .slice(1)
   .map(line => line.split(','));
 
@@ -15,10 +15,19 @@ const fragmentShader = fs.readFileSync('./src/js/three/starField.frag', 'utf8');
 
 const clamp = (x, a, b) => Math.max(a, Math.min(x, b));
 
+const stars11 = import('/js/astro/stars11.js');
+
+export const getStars11 = async () => {
+  const s = await stars11;
+  return s.default;
+};
+
 export default function makeStarField(radius, options = {}) {
   const minSize = options.minSize || 0.5;
   const scalePoint = options.scalePoint || (mag => 5 * Math.exp(-0.2 * mag));
   const fadePoint = options.scalePoint || (mag => Math.exp(-0.2 * (mag - 4)));
+
+  const stars = options.stars || stars4;
 
   const shaderMaterial = new THREE.ShaderMaterial({
     vertexShader,
