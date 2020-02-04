@@ -10,7 +10,7 @@
     "start": "parcel src/index.html",
     "build": "parcel build src/index.html --out-dir=build",
     "predeploy": "parcel build src/index.html --out-dir=deploy --public-url /nightsky/",
-    "deploy": "gh-pages -d=deploy -b=gh-pages",
+    "deploy": "gh-pages -d deploy -b gh-pages",
     "test": "jest"
   },
   "author": "Rafi Miller",
