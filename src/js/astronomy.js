@@ -256,6 +256,7 @@ export const getPositions = (date, { bodies = defaultBodies } = {}) => {
     positions.Sun = {
       longitude: L0 + C,
       anomaly: M + C,
+      latitude: 0,
       distance: R
     };
   }
