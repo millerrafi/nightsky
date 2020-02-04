@@ -24,8 +24,10 @@ Why can you always see the “man in the moon” as the moon goes around the ear
 
 When does the “man in the moon” appear sideways?
 
-Just after sunset, where in the sky would the [full moon / quarter moon / new moon] be?
+Just after sunset, where in the sky would the [ *full moon / quarter moon / new moon* ] be?
 
 ### The local sky
 
-Standing at the [north pole / equator / United States / Australia], on the first day of [spring / summer / fall / winter] at [sunrise / noon / sunset / midnight], where could you find the [sun / new moon / full moon / old moon]?
+How does the sky change if you fly north or south? East or west?
+
+Standing at the [ *north pole / equator / United States / Australia* ], on the first day of [ *spring / summer / fall / winter* ] at [ *sunrise / noon / sunset / midnight* ], where could you find the [ *sun / new moon / full moon / old moon* ]?
