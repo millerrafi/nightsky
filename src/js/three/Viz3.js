@@ -212,10 +212,36 @@ export default function Viz(index) {
     celestialSphere.add(starField);
   });
 
+  const planets = {};
+
+  ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'].forEach(p => {
+    const _p = new THREE.Mesh(
+      new THREE.SphereGeometry(MOON_RADIUS * 0.3, 32, 32),
+      new THREE.MeshBasicMaterial({ color: PALETTE[p] })
+    );
+    // _p.scale.set(SUN_RADIUS * 0.5, SUN_RADIUS * 0.5, 1);
+    ecliptic.add(_p);
+
+    planets[p] = _p;
+  });
+
   return {
     update({ positions, hide, location }) {
       const sunLong = positions.Sun.longitude * DEG + Math.PI;
       const moonLong = positions.Moon.longitude * DEG + Math.PI;
+
+      ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'].forEach(p => {
+        const _long = positions[p].longitude * DEG + Math.PI;
+        const _lat = positions[p].latitude * DEG;
+        planets[p].position.x =
+          EARTH_DISTANCE * Math.sin(_long) * Math.cos(_lat);
+        planets[p].position.z = EARTH_DISTANCE * Math.cos(_long);
+        planets[p].position.y =
+          EARTH_DISTANCE * Math.sin(_long) * Math.sin(_lat);
+
+        const scale = Math.min(2, positions[p].apparentSize * 1e4)/2 + 0.5;
+        planets[p].scale.set(scale, scale, scale);
+      });
 
       constellations.visible = !hide.constellations;
       moonOrbit.visible = !hide.orbits;

@@ -329,6 +329,16 @@ export const getPositions = (date, { bodies = defaultBodies } = {}) => {
   return positions;
 };
 
+const planetRadii = {
+  Mercury: 2440,
+  Venus: 6052,
+  Mars: 3390,
+  Jupiter: 69911,
+  Saturn: 58232
+};
+
+const AU = 149597871;
+
 function getPlanetPositions(date) {
   const JD = +date / 86400000 + 2440587.5;
   const tau = (JD - 2451545) / 365250;
@@ -397,7 +407,8 @@ function getPlanetPositions(date) {
       delta,
       longitude: lambda,
       latitude: beta,
-      distance: delta
+      distance: delta,
+      apparentSize: 2 * Math.atan2(planetRadii[planet] / AU, delta)
     };
   });
 

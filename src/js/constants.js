@@ -12,5 +12,10 @@ export const PALETTE = {
   ECLIPTIC: 0xffff00,
   MOON: 0xcccccc,
   GROUND: 0x330000,
-  HORIZON: 0xff0000
+  HORIZON: 0xff0000,
+  Mercury: 0xc9c8c7,
+  Venus: 0xfff0cc,
+  Mars: 0xff6035,
+  Jupiter: 0xffda94,
+  Saturn: 0xffd457
 };
