@@ -20,12 +20,15 @@
         font-size: 12px;
         /* display: none; */
       }
+
       input {
-        font: 1em monospace;
+        font: bold 1em monospace;
         background: transparent;
         color: #ddd;
         border: none;
         outline: none;
+        letter-spacing: 0.1ch;
+        padding: 0.1em;
       }
 
       input:focus {
@@ -67,7 +70,9 @@
       }
 
       .label {
-        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.3ch;
+        line-height: 1.5rem;
       }
 
       .display {
@@ -119,9 +124,11 @@
         text-transform: uppercase;
         position: absolute;
         top: 0.5rem;
-        left: 0.5rem;
+        left: 1rem;
         z-index: 5;
         margin: 0;
+        font-size: 1.25rem;
+        letter-spacing: 0.4ch;
       }
 
       #coords-input {
@@ -183,17 +190,34 @@
       .date-wrapper:hover .hint {
         opacity: 1;
       }
+
+      #date-display {
+        max-width: 12ch;
+      }
+
+      @media (max-width: 900px) {
+        .bar,
+        .main {
+          display: none;
+        }
+
+        body {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 3%;
+        }
+
+        body:after {
+          content: 'Sorry, your device isn’t supported. :/';
+        }
+      }
     </style>
   </head>
   <body>
     <div class="bar">
       <div>
         <div id="start-stop">▶</div>
-      </div>
-      <div>
-        <span class="label"> Speed </span>
-        <span id="speed-display" class="display"></span>
-        <div id="speed-slider" class="range"></div>
       </div>
       <div class="date-wrapper">
         <span class="label">Date</span>
@@ -205,6 +229,11 @@
         <span class="label">Local Time</span>
         <input type="text" id="time-display" class="display" />
         <div id="time-slider" class="range"></div>
+      </div>
+      <div>
+        <span class="label"> Speed </span>
+        <span id="speed-display" class="display"></span>
+        <div id="speed-slider" class="range"></div>
       </div>
     </div>
     <div class="main">
