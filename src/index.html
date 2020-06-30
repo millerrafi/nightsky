@@ -170,6 +170,19 @@
       .pane-2b {
         height: 0%;
       }
+
+      .hint {
+        padding: 0.2em 1em;
+        opacity: 0;
+        transition: 0.2s linear;
+        font-size: 0.7em;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .date-wrapper:hover .hint {
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
@@ -182,8 +195,9 @@
         <span id="speed-display" class="display"></span>
         <div id="speed-slider" class="range"></div>
       </div>
-      <div>
+      <div class="date-wrapper">
         <span class="label">Date</span>
+        <span class="hint">Hint: Shift key locks the time of day</span>
         <input type="text" id="date-display" class="display" />
         <div id="date-slider" class="range"></div>
       </div>
