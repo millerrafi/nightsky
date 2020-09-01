@@ -1,0 +1,41 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible" content="ie=edge")
+    title The Night Sky
+    style 
+      include index.css
+  body
+    .bar
+      div
+        #start-stop ▶
+      .date-wrapper
+        span.label Date
+        span.hint Hold shift to lock the hour
+        input#date-display.display(type="text")
+        #date-slider.range
+      div
+        span.label Local Time
+        input#time-display.display(type="text")
+        #time-slider.range
+      div
+        span.label  Speed 
+        span#speed-display.display
+        #speed-slider.range
+    .main
+      .pane.pane-1
+        p.viz-title Solar system
+        canvas#c1(tabindex="-1")
+      .pane.pane-2
+        .pane.pane-2a
+          p.viz-title Celestial sphere
+          canvas#c2(tabindex="-1")
+        .pane.pane-2b
+          p.viz-title Local sky
+          canvas#c3(tabindex="-1")
+          #coords-input
+            #coords-marker ⊕
+
+    script(src="js/index.js")
