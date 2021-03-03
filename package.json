@@ -35,6 +35,6 @@
     "jest": "^24.9.0",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-bundle-visualiser": "^1.2.0",
-    "pug": "^3.0.0"
+    "pug": "^3.0.1"
   }
 }
